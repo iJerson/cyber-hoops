@@ -36,10 +36,21 @@ public partial class CharacterRig : Node3D
     [Export] public Node3D? HipPivotL { get; set; }
     [Export] public Node3D? HipPivotR { get; set; }
 
+    /// <summary>Shoulder pitch when arms are fully raised overhead, in radians.</summary>
+    [Export] public float ArmsRaisedAngle { get; set; } = -2.7f;
+
+    /// <summary>How fast the arms blend to/from the raised pose, per second.</summary>
+    [Export] public float ArmsRaiseSpeed { get; set; } = 10.0f;
+
     private CharacterBody3D? _body;
     private float _phase;
     private float _idleTime;
     private float _pelvisRestY;
+    private float _armsRaisedTarget;
+    private float _armsRaised;
+
+    /// <summary>0 = arms follow gait, 1 = both arms overhead (dunk wind-up).</summary>
+    public void SetArmsRaised(float amount) => _armsRaisedTarget = Mathf.Clamp(amount, 0f, 1f);
 
     public override void _Ready()
     {
@@ -71,8 +82,13 @@ public partial class CharacterRig : Node3D
         // Legs alternate; arms counter-swing their same-side leg.
         HipPivotL.Rotation = new Vector3(swing * LegSwing * stride, 0f, 0f);
         HipPivotR.Rotation = new Vector3(-swing * LegSwing * stride, 0f, 0f);
-        ShoulderPivotL.Rotation = new Vector3(-swing * ArmSwing * stride, 0f, 0f);
-        ShoulderPivotR.Rotation = new Vector3(swing * ArmSwing * stride, 0f, 0f);
+
+        // Blend gait swing against the raised-overhead pose (dunks).
+        _armsRaised = Mathf.MoveToward(_armsRaised, _armsRaisedTarget, ArmsRaiseSpeed * (float)delta);
+        var armL = Mathf.Lerp(-swing * ArmSwing * stride, ArmsRaisedAngle, _armsRaised);
+        var armR = Mathf.Lerp(swing * ArmSwing * stride, ArmsRaisedAngle, _armsRaised);
+        ShoulderPivotL.Rotation = new Vector3(armL, 0f, 0f);
+        ShoulderPivotR.Rotation = new Vector3(armR, 0f, 0f);
 
         // Two bobs per stride while moving; slow breathing sway at rest.
         var bob = Mathf.Abs(Mathf.Sin(_phase * 2f)) * BobHeight * stride;

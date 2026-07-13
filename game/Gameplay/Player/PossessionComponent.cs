@@ -50,8 +50,8 @@ public partial class PossessionComponent : Node
         _ball.SetDribbleHeight(isIdle ? stats.IdleDribbleHeight : stats.MovingDribbleHeight);
     }
 
-    /// <summary>Glues the held ball to the dribble anchor (dunk carry, shot wind-up).</summary>
-    public void HoldBall() => _ball?.Hold(DribbleAnchor!);
+    /// <summary>Glues the held ball to an anchor (dunk carry, shot wind-up). Defaults to the dribble anchor.</summary>
+    public void HoldBall(Node3D? anchor = null) => _ball?.Hold(anchor ?? DribbleAnchor!);
 
     /// <summary>Releases the ball with the given velocity and gives up possession.</summary>
     public CyberHoopsBall? ReleaseBall(Vector3 velocity)

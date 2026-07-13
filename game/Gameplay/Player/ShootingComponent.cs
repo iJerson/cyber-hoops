@@ -32,6 +32,12 @@ public partial class ShootingComponent : Node
     /// <summary>Played on the dunk slam. Optional.</summary>
     [Export] public AudioStreamPlayer3D? DunkSound { get; set; }
 
+    /// <summary>Rig posed during the dunk (arms overhead). Optional.</summary>
+    [Export] public Presentation.Characters.CharacterRig? Rig { get; set; }
+
+    /// <summary>Where the ball is carried during the dunk — above the head. Optional; falls back to the dribble anchor.</summary>
+    [Export] public Node3D? OverheadAnchor { get; set; }
+
     private float _gravity;
     private bool _dunking;
     private double _dunkElapsed;
@@ -135,7 +141,8 @@ public partial class ShootingComponent : Node
 
         Body.Velocity = Vector3.Zero;
         Movement?.SetPhysicsProcess(false);
-        Possession!.HoldBall();
+        Possession!.HoldBall(OverheadAnchor);
+        Rig?.SetArmsRaised(1f);
     }
 
     private void UpdateDunk(double delta)
@@ -163,6 +170,7 @@ public partial class ShootingComponent : Node
 
         _dunking = false;
         Movement?.SetPhysicsProcess(true);
+        Rig?.SetArmsRaised(0f);
     }
 
     private static float GroundDistance(Vector3 a, Vector3 b) =>

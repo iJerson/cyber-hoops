@@ -42,6 +42,9 @@ InputSource = NodePath("../PlayerInputComponent")
 [node name="DribbleAnchor" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45, 0, -0.1)
 
+[node name="OverheadAnchor" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.35, -0.15)
+
 [node name="PickupArea" type="Area3D" parent="."]
 collision_mask = 4
 
@@ -55,13 +58,15 @@ PickupArea = NodePath("../PickupArea")
 DribbleAnchor = NodePath("../DribbleAnchor")
 Movement = NodePath("../MovementComponent")
 
-[node name="ShootingComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "Possession", "Movement", "DunkSound")]
+[node name="ShootingComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "Possession", "Movement", "DunkSound", "Rig", "OverheadAnchor")]
 script = ExtResource("5_shooting")
 Body = NodePath("..")
 Possession = NodePath("../PossessionComponent")
 Movement = NodePath("../MovementComponent")
 Stats = ExtResource("6_shootstats")
 DunkSound = NodePath("../DunkPlayer")
+Rig = NodePath("../CharacterRig")
+OverheadAnchor = NodePath("../OverheadAnchor")
 
 [node name="DunkPlayer" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("10_dunk")
