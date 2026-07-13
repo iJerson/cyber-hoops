@@ -1,0 +1,40 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://game/Gameplay/Player/PlayerInputComponent.cs" id="1_input"]
+[ext_resource type="Script" path="res://game/Gameplay/Player/MovementComponent.cs" id="2_movement"]
+[ext_resource type="Resource" path="res://game/Gameplay/Player/DefaultMovementStats.tres" id="3_stats"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.35
+height = 1.9
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_body"]
+radius = 0.35
+height = 1.9
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
+albedo_color = Color(0.2, 0.55, 0.95, 1)
+
+[node name="Player" type="CharacterBody3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+mesh = SubResource("CapsuleMesh_body")
+surface_material_override/0 = SubResource("StandardMaterial3D_body")
+
+[node name="FacingIndicator" type="MeshInstance3D" parent="MeshInstance3D"]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, -0.45)
+mesh = SubResource("CapsuleMesh_body")
+
+[node name="PlayerInputComponent" type="Node" parent="."]
+script = ExtResource("1_input")
+
+[node name="MovementComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "InputSource")]
+script = ExtResource("2_movement")
+Body = NodePath("..")
+Stats = ExtResource("3_stats")
+InputSource = NodePath("../PlayerInputComponent")

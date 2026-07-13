@@ -1,0 +1,65 @@
+[gd_scene load_steps=8 format=3]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(15, 0.2, 14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+size = Vector3(15, 0.2, 14)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
+albedo_color = Color(0.75, 0.55, 0.35, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_x"]
+size = Vector3(0.5, 4, 14)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_z"]
+size = Vector3(15, 4, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_backboard"]
+size = Vector3(1.8, 1.05, 0.05)
+
+[sub_resource type="TorusMesh" id="TorusMesh_rim"]
+inner_radius = 0.2
+outer_radius = 0.25
+
+[node name="Court" type="Node3D"]
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+shape = SubResource("BoxShape3D_floor")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+mesh = SubResource("BoxMesh_floor")
+surface_material_override/0 = SubResource("StandardMaterial3D_floor")
+
+[node name="Bounds" type="StaticBody3D" parent="."]
+
+[node name="WallLeft" type="CollisionShape3D" parent="Bounds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.75, 2, 0)
+shape = SubResource("BoxShape3D_wall_x")
+
+[node name="WallRight" type="CollisionShape3D" parent="Bounds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.75, 2, 0)
+shape = SubResource("BoxShape3D_wall_x")
+
+[node name="WallBack" type="CollisionShape3D" parent="Bounds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -7.25)
+shape = SubResource("BoxShape3D_wall_z")
+
+[node name="WallFront" type="CollisionShape3D" parent="Bounds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 7.25)
+shape = SubResource("BoxShape3D_wall_z")
+
+[node name="HoopPlaceholder" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6)
+
+[node name="Backboard" type="MeshInstance3D" parent="HoopPlaceholder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, -0.4)
+mesh = SubResource("BoxMesh_backboard")
+
+[node name="Rim" type="MeshInstance3D" parent="HoopPlaceholder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.05, 0)
+mesh = SubResource("TorusMesh_rim")
