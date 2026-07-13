@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://game/Gameplay/AI/AIInputComponent.cs" id="1_aiinput"]
 [ext_resource type="Script" path="res://game/Gameplay/Player/MovementComponent.cs" id="2_movement"]
@@ -8,6 +8,8 @@
 [ext_resource type="Resource" path="res://game/Gameplay/Player/DefaultShootStats.tres" id="6_shootstats"]
 [ext_resource type="Script" path="res://game/Gameplay/AI/AIBrainComponent.cs" id="7_brain"]
 [ext_resource type="Resource" path="res://game/Gameplay/AI/DefaultAIStats.tres" id="8_aistats"]
+[ext_resource type="Script" path="res://game/Gameplay/Player/DefenseComponent.cs" id="9_defense"]
+[ext_resource type="Resource" path="res://game/Gameplay/Player/DefaultDefenseStats.tres" id="10_defensestats"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -70,10 +72,18 @@ Body = NodePath("..")
 Possession = NodePath("../PossessionComponent")
 Stats = ExtResource("6_shootstats")
 
-[node name="AIBrainComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "InputComponent", "Possession", "Shooting")]
+[node name="DefenseComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "Possession")]
+script = ExtResource("9_defense")
+ReadPlayerInput = false
+Body = NodePath("..")
+Possession = NodePath("../PossessionComponent")
+Stats = ExtResource("10_defensestats")
+
+[node name="AIBrainComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "InputComponent", "Possession", "Shooting", "Defense")]
 script = ExtResource("7_brain")
 Body = NodePath("..")
 InputComponent = NodePath("../AIInputComponent")
 Possession = NodePath("../PossessionComponent")
 Shooting = NodePath("../ShootingComponent")
+Defense = NodePath("../DefenseComponent")
 Stats = ExtResource("8_aistats")

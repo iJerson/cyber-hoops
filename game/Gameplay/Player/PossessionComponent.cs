@@ -36,6 +36,7 @@ public partial class PossessionComponent : Node
         }
 
         PickupArea.BodyEntered += OnBodyEntered;
+        AddToGroup("possession");
     }
 
     public override void _PhysicsProcess(double delta)

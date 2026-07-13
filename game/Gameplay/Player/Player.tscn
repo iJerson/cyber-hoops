@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://game/Gameplay/Player/PlayerInputComponent.cs" id="1_input"]
 [ext_resource type="Script" path="res://game/Gameplay/Player/MovementComponent.cs" id="2_movement"]
@@ -6,6 +6,8 @@
 [ext_resource type="Script" path="res://game/Gameplay/Player/PossessionComponent.cs" id="4_possession"]
 [ext_resource type="Script" path="res://game/Gameplay/Player/ShootingComponent.cs" id="5_shooting"]
 [ext_resource type="Resource" path="res://game/Gameplay/Player/DefaultShootStats.tres" id="6_shootstats"]
+[ext_resource type="Script" path="res://game/Gameplay/Player/DefenseComponent.cs" id="7_defense"]
+[ext_resource type="Resource" path="res://game/Gameplay/Player/DefaultDefenseStats.tres" id="8_defensestats"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -65,3 +67,9 @@ script = ExtResource("5_shooting")
 Body = NodePath("..")
 Possession = NodePath("../PossessionComponent")
 Stats = ExtResource("6_shootstats")
+
+[node name="DefenseComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "Possession")]
+script = ExtResource("7_defense")
+Body = NodePath("..")
+Possession = NodePath("../PossessionComponent")
+Stats = ExtResource("8_defensestats")

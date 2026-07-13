@@ -19,6 +19,7 @@ public partial class AIBrainComponent : Node
     [Export] public AIInputComponent? InputComponent { get; set; }
     [Export] public PossessionComponent? Possession { get; set; }
     [Export] public ShootingComponent? Shooting { get; set; }
+    [Export] public DefenseComponent? Defense { get; set; }
     [Export] public AIStats? Stats { get; set; }
     [Export] public StringName BallGroup { get; set; } = "ball";
     [Export] public StringName OpponentGroup { get; set; } = "player";
@@ -70,6 +71,12 @@ public partial class AIBrainComponent : Node
                 break;
             case AIStateNames.Defend when opponent is not null:
                 SteerTowards(DefendPosition(opponent.GlobalPosition, hoop.GlobalPosition));
+                if (Defense?.Stats is { } defense
+                    && GroundDistance(Body.GlobalPosition, ball.GlobalPosition) <= defense.StealRange)
+                {
+                    Defense.TryDefend();
+                }
+
                 break;
             default:
                 Stop();
