@@ -13,6 +13,9 @@ public partial class HoopEffects : Node3D
     [Export] public Node3D? Rim { get; set; }
     [Export] public GpuParticles3D? Burst { get; set; }
 
+    /// <summary>Smaller burst for a regular made shot.</summary>
+    [Export] public GpuParticles3D? SwishBurst { get; set; }
+
     /// <summary>How long the rim rattles after a slam, in seconds.</summary>
     [Export] public float ShakeDuration { get; set; } = 0.45f;
 
@@ -43,6 +46,18 @@ public partial class HoopEffects : Node3D
             Burst.Restart();
             Burst.Emitting = true;
         }
+    }
+
+    /// <summary>Small burst for a regular made shot. Skipped when a slam is already playing.</summary>
+    public void Swish()
+    {
+        if (_shakeRemaining > 0.0 || SwishBurst is null)
+        {
+            return;
+        }
+
+        SwishBurst.Restart();
+        SwishBurst.Emitting = true;
     }
 
     public override void _PhysicsProcess(double delta)

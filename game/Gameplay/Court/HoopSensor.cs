@@ -28,6 +28,11 @@ public partial class HoopSensor : Area3D
             && ball.LinearVelocity.Y < 0f)
         {
             SwishSound?.Play();
+            if (GetTree().GetFirstNodeInGroup("hoop_effects") is Presentation.Court.HoopEffects fx)
+            {
+                fx.Swish();
+            }
+
             EmitSignal(SignalName.MadeShot, ball);
             GD.Print("Made shot!");
         }

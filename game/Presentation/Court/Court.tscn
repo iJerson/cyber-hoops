@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3]
+[gd_scene load_steps=30 format=3]
 
 [ext_resource type="Script" path="res://game/Gameplay/Court/HoopSensor.cs" id="1_sensor"]
 [ext_resource type="Script" path="res://game/Presentation/Court/CourtLines.cs" id="2_lines"]
@@ -57,6 +57,26 @@ albedo_color = Color(1, 0.6, 0.15, 1)
 emission_enabled = true
 emission = Color(1, 0.5, 0.1, 1)
 emission_energy_multiplier = 3.0
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_swish"]
+spread = 60.0
+direction = Vector3(0, -1, 0)
+initial_velocity_min = 0.8
+initial_velocity_max = 1.8
+gravity = Vector3(0, -3, 0)
+scale_min = 0.3
+scale_max = 0.7
+
+[sub_resource type="SphereMesh" id="SphereMesh_swish"]
+radius = 0.025
+height = 0.05
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_swish"]
+shading_mode = 0
+albedo_color = Color(0.4, 0.95, 1, 1)
+emission_enabled = true
+emission = Color(0.3, 0.9, 1, 1)
+emission_energy_multiplier = 2.5
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_pole"]
 top_radius = 0.06
@@ -248,10 +268,11 @@ shape = SubResource("CylinderShape3D_sensor")
 [node name="SwishPlayer" type="AudioStreamPlayer3D" parent="Hoop/MadeShotSensor"]
 stream = ExtResource("3_swish")
 
-[node name="HoopFX" type="Node3D" parent="Hoop" node_paths=PackedStringArray("Rim", "Burst")]
+[node name="HoopFX" type="Node3D" parent="Hoop" node_paths=PackedStringArray("Rim", "Burst", "SwishBurst")]
 script = ExtResource("4_fx")
 Rim = NodePath("../Rim")
 Burst = NodePath("Burst")
+SwishBurst = NodePath("SwishBurst")
 
 [node name="Burst" type="GPUParticles3D" parent="Hoop/HoopFX"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.05, 0)
@@ -263,3 +284,14 @@ explosiveness = 1.0
 process_material = SubResource("ParticleProcessMaterial_burst")
 draw_pass_1 = SubResource("SphereMesh_spark")
 material_override = SubResource("StandardMaterial3D_spark")
+
+[node name="SwishBurst" type="GPUParticles3D" parent="Hoop/HoopFX"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.95, 0)
+emitting = false
+amount = 12
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_swish")
+draw_pass_1 = SubResource("SphereMesh_swish")
+material_override = SubResource("StandardMaterial3D_swish")
