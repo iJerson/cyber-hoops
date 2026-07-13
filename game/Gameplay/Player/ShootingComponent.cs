@@ -166,6 +166,10 @@ public partial class ShootingComponent : Node
             ball.GlobalPosition = _rimPosition + Vector3.Up * 0.15f;
             ball.LastShotGroundDistance = GroundDistance(_dunkLanding, _rimPosition);
             DunkSound?.Play();
+            if (GetTree().GetFirstNodeInGroup("hoop_effects") is Presentation.Court.HoopEffects fx)
+            {
+                fx.Slam();
+            }
         }
 
         _dunking = false;
