@@ -15,7 +15,6 @@ run/main_scene="res://game/Main.tscn"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
-
 [dotnet]
 
 project/assembly_name="CyberHoops"
