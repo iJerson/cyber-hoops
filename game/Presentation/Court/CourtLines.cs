@@ -23,7 +23,10 @@ public partial class CourtLines : MeshInstance3D
     [Export] public float KeyLength { get; set; } = 5.8f;
     [Export] public float FreeThrowCircleRadius { get; set; } = 1.8f;
     [Export] public float LineWidth { get; set; } = 0.05f;
-    [Export] public Color LineColor { get; set; } = new(0.95f, 0.95f, 0.95f);
+    [Export] public Color LineColor { get; set; } = new(0.1f, 0.9f, 1.0f);
+
+    /// <summary>Emission strength of the lines; &gt; 1 blooms under WorldEnvironment glow.</summary>
+    [Export] public float GlowEnergy { get; set; } = 2.5f;
 
     private const float LineY = 0.01f;
     private const int ArcSegments = 48;
@@ -63,6 +66,9 @@ public partial class CourtLines : MeshInstance3D
         {
             AlbedoColor = LineColor,
             ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+            EmissionEnabled = true,
+            Emission = LineColor,
+            EmissionEnergyMultiplier = GlowEnergy,
         };
     }
 

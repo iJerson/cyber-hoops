@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://game/Gameplay/AI/AIInputComponent.cs" id="1_aiinput"]
 [ext_resource type="Script" path="res://game/Gameplay/Player/MovementComponent.cs" id="2_movement"]
@@ -21,7 +21,22 @@ radius = 0.35
 height = 1.9
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
-albedo_color = Color(0.9, 0.25, 0.25, 1)
+albedo_color = Color(0.14, 0.07, 0.12, 1)
+metallic = 0.4
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_accent"]
+albedo_color = Color(1, 0.15, 0.8, 1)
+emission_enabled = true
+emission = Color(1, 0.15, 0.8, 1)
+emission_energy_multiplier = 2.2
+
+[sub_resource type="BoxMesh" id="BoxMesh_visor"]
+size = Vector3(0.34, 0.09, 0.12)
+
+[sub_resource type="TorusMesh" id="TorusMesh_ring"]
+inner_radius = 0.42
+outer_radius = 0.5
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_pickup"]
 radius = 0.9
@@ -40,6 +55,17 @@ surface_material_override/0 = SubResource("StandardMaterial3D_body")
 [node name="FacingIndicator" type="MeshInstance3D" parent="MeshInstance3D"]
 transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, -0.45)
 mesh = SubResource("CapsuleMesh_body")
+surface_material_override/0 = SubResource("StandardMaterial3D_accent")
+
+[node name="Visor" type="MeshInstance3D" parent="MeshInstance3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.62, -0.28)
+mesh = SubResource("BoxMesh_visor")
+surface_material_override/0 = SubResource("StandardMaterial3D_accent")
+
+[node name="GlowRing" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.15, 0, 0, 0, 1, 0, 0.05, 0)
+mesh = SubResource("TorusMesh_ring")
+surface_material_override/0 = SubResource("StandardMaterial3D_accent")
 
 [node name="AIInputComponent" type="Node" parent="."]
 script = ExtResource("1_aiinput")

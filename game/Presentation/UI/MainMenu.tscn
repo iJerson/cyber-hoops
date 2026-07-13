@@ -33,12 +33,14 @@ theme_override_constants/separation = 24
 
 [node name="Title" type="Label" parent="Centre"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.95, 1, 1)
 theme_override_font_sizes/font_size = 56
 horizontal_alignment = 1
 text = "CYBER HOOPS"
 
 [node name="Subtitle" type="Label" parent="Centre"]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.35, 0.85, 1)
 theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
 text = "First to 21 wins"
