@@ -1,0 +1,21 @@
+# Godot 4
+.godot/
+*.translation
+export.cfg
+export_credentials.cfg
+
+# Godot Mono / C#
+.mono/
+data_*/
+mono_crash.*.json
+bin/
+obj/
+
+# IDE
+.idea/
+.vscode/
+*.user
+*.suo
+
+# OS
+.DS_Store
