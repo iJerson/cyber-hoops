@@ -61,6 +61,12 @@ public partial class AnimationStats : Resource
     /// <summary>Arms raise/lower blend speed, per second.</summary>
     [Export] public float ArmsRaiseSpeed { get; set; } = 10.0f;
 
+    /// <summary>Crouch depth during an action pre-load dip, metres.</summary>
+    [Export] public float DipCrouch { get; set; } = 0.12f;
+
+    /// <summary>Dip blend speed, per second (fast — the dip itself is 50–70ms).</summary>
+    [Export] public float DipBlendSpeed { get; set; } = 20.0f;
+
     // --- Stop state ---
 
     /// <summary>Extra pelvis sink during a hard stop, metres.</summary>

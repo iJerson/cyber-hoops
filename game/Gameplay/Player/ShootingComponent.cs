@@ -130,7 +130,8 @@ public partial class ShootingComponent : Node
     private void StartDunk(Vector3 rimPosition)
     {
         _dunking = true;
-        _dunkElapsed = 0.0;
+        // Negative elapsed time = the pre-load dip window before the lunge.
+        _dunkElapsed = -Stats!.DunkDipSeconds;
         _rimPosition = rimPosition;
         _dunkStart = Body!.GlobalPosition;
 
@@ -142,17 +143,33 @@ public partial class ShootingComponent : Node
         Body.Velocity = Vector3.Zero;
         Movement?.SetPhysicsProcess(false);
         Possession!.HoldBall(OverheadAnchor);
-        Anim?.SetArmsRaised(1f);
+        Anim?.SetActionDip(1f);
     }
 
     private void UpdateDunk(double delta)
     {
         var stats = Stats!;
+        var wasDipping = _dunkElapsed < 0.0;
         _dunkElapsed += delta;
+
+        if (_dunkElapsed < 0.0)
+        {
+            return; // anticipation crouch; lunge starts when the clock crosses zero
+        }
+
+        if (wasDipping)
+        {
+            Anim?.SetActionDip(0f);
+            Anim?.SetArmsRaised(1f);
+        }
+
         var t = Mathf.Clamp((float)(_dunkElapsed / stats.DunkDuration), 0f, 1f);
 
         var position = _dunkStart.Lerp(_dunkLanding, t);
-        position.Y += Mathf.Sin(t * Mathf.Pi) * stats.DunkJumpHeight;
+        // Exponent < 1 flattens the arc's top for arcade hang time.
+        // Sin is clamped at 0: float error makes sin(pi) slightly negative and Pow(neg, frac) is NaN.
+        var arc = Mathf.Max(0f, Mathf.Sin(t * Mathf.Pi));
+        position.Y += Mathf.Pow(arc, stats.DunkHangExponent) * stats.DunkJumpHeight;
         Body!.GlobalPosition = position;
 
         if (t < 1f)

@@ -25,6 +25,8 @@ public partial class AnimationController : Node
 
     private float _armsRaisedTarget;
     private float _armsRaised;
+    private float _dipTarget;
+    private float _dip;
     private float _dribbleWeight;
     private float _protectWeight;
     private float _stopWeight;
@@ -34,6 +36,9 @@ public partial class AnimationController : Node
 
     /// <summary>0 = arms follow gait, 1 = both arms overhead (dunk carry).</summary>
     public void SetArmsRaised(float amount) => _armsRaisedTarget = Mathf.Clamp(amount, 0f, 1f);
+
+    /// <summary>Pre-load dip for explosive actions: 1 = full anticipation crouch.</summary>
+    public void SetActionDip(float amount) => _dipTarget = Mathf.Clamp(amount, 0f, 1f);
 
     public override void _Ready()
     {
@@ -98,8 +103,9 @@ public partial class AnimationController : Node
             }
         }
 
-        // --- Stop state: extra sink ---
+        // --- Stop state + action pre-load: extra sink ---
         crouch += stats.StopSink * _stopWeight;
+        crouch += stats.DipCrouch * _dip;
 
         // --- Layer 2: action override (arms overhead) ---
         armL = Mathf.Lerp(armL, stats.ArmsRaisedAngle, _armsRaised);
@@ -120,6 +126,7 @@ public partial class AnimationController : Node
     private void UpdateLayerWeights(AnimationStats stats, float dt)
     {
         _armsRaised = Mathf.MoveToward(_armsRaised, _armsRaisedTarget, stats.ArmsRaiseSpeed * dt);
+        _dip = Mathf.MoveToward(_dip, _dipTarget, stats.DipBlendSpeed * dt);
         _dribbleWeight = Mathf.MoveToward(_dribbleWeight, Dribble!.IsDribbling ? 1f : 0f, stats.LayerBlendSpeed * dt);
         _protectWeight = Mathf.MoveToward(_protectWeight, Dribble.IsProtecting ? 1f : 0f, stats.LayerBlendSpeed * dt);
         _stopWeight = Mathf.MoveToward(

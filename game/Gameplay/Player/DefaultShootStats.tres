@@ -12,3 +12,5 @@ DunkRange = 2.6
 DunkDuration = 0.45
 DunkJumpHeight = 1.1
 DunkSlamSpeed = 8.0
+DunkDipSeconds = 0.06
+DunkHangExponent = 0.7

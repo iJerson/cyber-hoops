@@ -31,4 +31,10 @@ public partial class ShootStats : Resource
 
     /// <summary>Downward speed of the slammed ball, in m/s.</summary>
     [Export] public float DunkSlamSpeed { get; set; } = 8.0f;
+
+    /// <summary>Pre-load crouch before the dunk lunge, seconds (arcade-short; motion reads as anticipation).</summary>
+    [Export] public float DunkDipSeconds { get; set; } = 0.06f;
+
+    /// <summary>Exponent on the lunge height curve; below 1 flattens the apex for extra hang time.</summary>
+    [Export] public float DunkHangExponent { get; set; } = 0.7f;
 }
