@@ -218,6 +218,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.05, 0)
 
 [node name="MadeShotSensor" type="Area3D" parent="Hoop" node_paths=PackedStringArray("SwishSound")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.85, 0)
+collision_mask = 4
 script = ExtResource("1_sensor")
 SwishSound = NodePath("SwishPlayer")
 

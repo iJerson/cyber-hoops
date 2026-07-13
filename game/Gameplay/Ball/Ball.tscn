@@ -18,6 +18,8 @@ emission = Color(1, 0.4, 0.05, 1)
 emission_energy_multiplier = 1.6
 
 [node name="Ball" type="RigidBody3D" groups=["ball"] node_paths=PackedStringArray("BounceSound")]
+collision_layer = 4
+collision_mask = 1
 script = ExtResource("1_ball")
 Stats = ExtResource("2_stats")
 BounceSound = NodePath("BouncePlayer")

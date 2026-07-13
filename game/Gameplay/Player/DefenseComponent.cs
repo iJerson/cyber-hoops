@@ -102,6 +102,8 @@ public partial class DefenseComponent : Node
         var away = (ball.GlobalPosition - Body.GlobalPosition) with { Y = 0f };
         var knockDirection = away.LengthSquared() < 0.0001f ? Vector3.Forward : away.Normalized();
         victim.ReleaseBall(knockDirection * stats.StealKnockSpeed + Vector3.Up * stats.StealPopSpeed);
+        // Spawn the loose ball clear of both bodies so it never unfreezes inside a capsule.
+        ball.GlobalPosition += knockDirection * 0.5f;
         ball.LastShooterTeam = -1;
         return true;
     }
