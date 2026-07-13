@@ -6,9 +6,9 @@
 script = ExtResource("1_stats")
 ArcClearance = 1.2
 ReleaseHeight = 2.1
-LayupRange = 3.2
-LayupArcClearance = 0.45
-DunkRange = 1.8
-DunkDuration = 0.35
+LayupRange = 4.5
+LayupArcClearance = 0.3
+DunkRange = 2.6
+DunkDuration = 0.45
 DunkJumpHeight = 1.1
 DunkSlamSpeed = 8.0
