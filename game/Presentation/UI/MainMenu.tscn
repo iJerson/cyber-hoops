@@ -2,13 +2,14 @@
 
 [ext_resource type="Script" path="res://game/Presentation/UI/MainMenu.cs" id="1_menu"]
 
-[node name="MainMenu" type="Control" node_paths=PackedStringArray("PlayButton", "QuitButton")]
+[node name="MainMenu" type="Control" node_paths=PackedStringArray("PlayButton", "PracticeButton", "QuitButton")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_menu")
 PlayButton = NodePath("Centre/PlayButton")
+PracticeButton = NodePath("Centre/PracticeButton")
 QuitButton = NodePath("Centre/QuitButton")
 
 [node name="Background" type="ColorRect" parent="."]
@@ -49,6 +50,11 @@ text = "First to 21 wins"
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "PLAY"
+
+[node name="PracticeButton" type="Button" parent="Centre"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "PRACTICE"
 
 [node name="QuitButton" type="Button" parent="Centre"]
 layout_mode = 2
