@@ -217,3 +217,55 @@ Global rules:
 4. **Sync invariant:** while moving with ball, bounce contact = opposite-foot plant. On any transition, re-derive `bouncePhase` from `gaitPhase`, never let them drift.
 5. **Decay invariant:** bounce apex height is a function of current speed and defender proximity — it may never change discontinuously.
 6. **Head invariant:** head pitch/yaw driven by focus target only; body transitions never drag the head with them (except spin: head leads).
+
+---
+
+## Arcade adjustments
+
+Cyber Hoops is arcade, not simulation. The spec above is the *believability floor*;
+this section overrides it wherever realism and fun conflict. Governing rule:
+**realism in the rhythm, exaggeration in the amplitude, arcade in the timing.**
+
+### Keep at realistic values (these SELL the motion; cost nothing in responsiveness)
+
+- Opposition and bounce↔step sync (global rule 4) — the brain checks rhythm, not magnitude.
+- Pelvis-leads ordering (global rule 2).
+- Hand rides the ball at contact (B) — reads at a glance.
+- Head level + eyes on play (rule 6).
+- Continuous decay of bounce height (rule 5).
+
+### Cut or compress (realism that fights responsiveness)
+
+| Spec item | Sim value | Arcade override |
+|---|---|---|
+| Pre-load dips (G, I, K, M) | 100–150ms mandatory | 50–70ms, and motion starts DURING the dip — never delay input response; the dip is read as anticipation, not felt as lag |
+| Blend times | 80–300ms | halve everything: 40–150ms; input latency reads as "heavy" |
+| Stop pattern (H) | two-step 300ms | one hard 120ms stop with deep knee sink; exaggerate the sink to explain the impossible physics |
+| Crossover sequence (F) | 350ms full chain | 200ms; keep the ORDER, compress the gaps |
+| Layup two-step gather (J) | strict footwork | ignore footwork legality entirely; keep only the inside-leg knee drive because it looks athletic |
+
+### Exaggerate beyond realism (fun multipliers)
+
+| Item | Realistic | Arcade target | Why |
+|---|---|---|---|
+| Sprint lean (D) | 0.18–0.28 | 0.35–0.4 + speed lines feel | cartoon speed read; pairs with FOV/camera pull |
+| Explosive first step (G) | ball 1.5m ahead | 2.5m+, body stretches, brief motion blur/trail | burst must feel superhuman |
+| Dunk flight (K) | jump to rim | +50% hang time at apex, deeper back-arch (+0.15), slower rise / snap-fast slam | anticipation → payoff curve; the slam frame is the poster |
+| Dunk landing | knees absorb 0.2 | full crouch (0.35) + rim shake + already-added burst | impact sells power |
+| Protect stance (E) | pelvis yaw 0.6–0.9 | full 1.1 dramatic shield, free arm fully horizontal | readability at game camera distance |
+| Steal lunge (L) | short reach | lunge covers 0.5m, body stretches like fencing touch | telegraphs the mechanic to both players |
+| Crossover ball (F) | apex <0.4m | nearly floor-scraping snap with audible tick | crunchy game-feel moment |
+| Idle dribble tempo | gravity period | 15% faster than physics | energy at rest; games feel dead at true tempo |
+| Jump shot apex hold (I) | none | 60ms freeze at release | shot timing readability, screenshot frame |
+
+### Squash and stretch (pure arcade, no sim basis)
+
+- Ball: 15% vertical squash at every floor contact, 8% stretch at peak fall speed.
+- Rig: 5% torso stretch during dunk rise, 8% squash on dunk land and hard stop.
+- Never on: idle, walk — reserve deformation for high-energy moments so it stays special.
+
+### Responsiveness contract (never violate)
+
+1. Input → visible reaction ≤ 50ms (one dip frame allowed, movement starts under it).
+2. No animation may delay a gameplay effect: ball release, steal window, movement change happen on the gameplay tick; animation catches up.
+3. Player-controlled character never plays a non-interruptible animation longer than 200ms (dunk flight is the single exception — it is the reward).
