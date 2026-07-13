@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BallStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/Gameplay/Ball/BallStats.cs" id="1_stats"]
+
+[resource]
+script = ExtResource("1_stats")
+Radius = 0.12
+Mass = 0.62
+Bounciness = 0.8
+Friction = 0.6
+IdleDribbleHeight = 0.9
+MovingDribbleHeight = 0.55
+DribbleFollowSpeed = 12.0

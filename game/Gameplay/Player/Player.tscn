@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://game/Gameplay/Player/PlayerInputComponent.cs" id="1_input"]
 [ext_resource type="Script" path="res://game/Gameplay/Player/MovementComponent.cs" id="2_movement"]
 [ext_resource type="Resource" path="res://game/Gameplay/Player/DefaultMovementStats.tres" id="3_stats"]
+[ext_resource type="Script" path="res://game/Gameplay/Player/PossessionComponent.cs" id="4_possession"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -14,6 +15,9 @@ height = 1.9
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
 albedo_color = Color(0.2, 0.55, 0.95, 1)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_pickup"]
+radius = 0.9
 
 [node name="Player" type="CharacterBody3D"]
 
@@ -38,3 +42,18 @@ script = ExtResource("2_movement")
 Body = NodePath("..")
 Stats = ExtResource("3_stats")
 InputSource = NodePath("../PlayerInputComponent")
+
+[node name="DribbleAnchor" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45, 0, -0.1)
+
+[node name="PickupArea" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("SphereShape3D_pickup")
+
+[node name="PossessionComponent" type="Node" parent="." node_paths=PackedStringArray("PickupArea", "DribbleAnchor", "Movement")]
+script = ExtResource("4_possession")
+PickupArea = NodePath("../PickupArea")
+DribbleAnchor = NodePath("../DribbleAnchor")
+Movement = NodePath("../MovementComponent")
