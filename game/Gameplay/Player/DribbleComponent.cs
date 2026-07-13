@@ -20,7 +20,6 @@ public partial class DribbleComponent : Node
     [Export] public MovementComponent? Movement { get; set; }
     [Export] public Node3D? DribbleAnchor { get; set; }
     [Export] public DribbleStats? Stats { get; set; }
-    [Export] public Presentation.Characters.CharacterRig? Rig { get; set; }
     [Export] public StringName OpponentGroup { get; set; } = "player";
 
     private readonly BounceClock _bounce = new();
@@ -31,8 +30,17 @@ public partial class DribbleComponent : Node
     /// <summary>Current bounce phase in [0,1); contact at 0.</summary>
     public float BouncePhase => (float)_bounce.Phase;
 
+    /// <summary>True while the possessed ball is live-dribbling.</summary>
+    public bool IsDribbling { get; private set; }
+
+    /// <summary>Ball height as a fraction of the current apex, in [0,1]. For the arm pump.</summary>
+    public float NormalizedBallHeight { get; private set; }
+
     /// <summary>True while the protect stance is active (defender near, with hysteresis).</summary>
     public bool IsProtecting => _protecting;
+
+    /// <summary>+1 when the defender is on the body's right, -1 on the left. For the shield pose.</summary>
+    public float ProtectSideSign { get; private set; } = 1f;
 
     public override void _Ready()
     {
@@ -52,11 +60,14 @@ public partial class DribbleComponent : Node
         var ball = Possession!.Ball;
         if (ball is null || ball.CurrentStateName != CyberHoopsBall.DribblingState)
         {
-            Rig?.SetDribble(0f, 0f);
+            IsDribbling = false;
+            NormalizedBallHeight = 0f;
             _protecting = false;
             _lastGaitPhase = Movement!.GaitPhase;
             return;
         }
+
+        IsDribbling = true;
 
         var stats = Stats!;
         var normalizedSpeed = Movement!.NormalizedSpeed;
@@ -71,7 +82,7 @@ public partial class DribbleComponent : Node
 
         var height = (float)_bounce.HeightFor(apex);
         ball.SetBounce(height, _bounce.ContactThisTick);
-        Rig?.SetDribble(1f, apex <= 0f ? 0f : height / apex);
+        NormalizedBallHeight = apex <= 0f ? 0f : height / apex;
     }
 
     private void AdvanceBounce(double delta, DribbleStats stats, float apex, float normalizedSpeed)
@@ -123,8 +134,8 @@ public partial class DribbleComponent : Node
         Vector3 target;
         if (_protecting)
         {
-            var side = DefenderSideSign();
-            target = new Vector3(stats.ProtectAnchorOffset.X * -side, 0f, -stats.ProtectAnchorOffset.Y);
+            ProtectSideSign = DefenderSideSign();
+            target = new Vector3(stats.ProtectAnchorOffset.X * -ProtectSideSign, 0f, -stats.ProtectAnchorOffset.Y);
         }
         else
         {

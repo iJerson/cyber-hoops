@@ -53,9 +53,10 @@ size = Vector3(0.14, 0.09, 0.3)
 inner_radius = 0.42
 outer_radius = 0.5
 
-[node name="CharacterRig" type="Node3D" node_paths=PackedStringArray("Pelvis", "ShoulderPivotL", "ShoulderPivotR", "HipPivotL", "HipPivotR")]
+[node name="CharacterRig" type="Node3D" node_paths=PackedStringArray("Pelvis", "Head", "ShoulderPivotL", "ShoulderPivotR", "HipPivotL", "HipPivotR")]
 script = ExtResource("1_rig")
 Pelvis = NodePath("Pelvis")
+Head = NodePath("Pelvis/Head")
 ShoulderPivotL = NodePath("Pelvis/ShoulderPivotL")
 ShoulderPivotR = NodePath("Pelvis/ShoulderPivotR")
 HipPivotL = NodePath("Pelvis/HipPivotL")

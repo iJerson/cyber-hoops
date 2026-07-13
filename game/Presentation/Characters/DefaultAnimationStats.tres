@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="AnimationStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/Presentation/Characters/AnimationStats.cs" id="1_stats"]
+
+[resource]
+script = ExtResource("1_stats")
+LegSwing = 0.7
+ArmSwing = 0.55
+BobHeight = 0.05
+SprintLean = 0.3
+BreatheAmplitude = 0.012
+BreatheRate = 2.2
+DribbleCrouch = 0.08
+DribbleLean = 0.12
+DribblePumpBase = 0.35
+DribblePumpRange = 0.55
+ProtectYaw = 0.9
+ProtectCrouch = 0.06
+ShieldArmPitch = 0.7
+ArmsRaisedAngle = 2.7
+ArmsRaiseSpeed = 10.0
+StopSink = 0.1
+LayerBlendSpeed = 8.0
+HeadYawLimit = 0.7
+HeadTurnSpeed = 6.0

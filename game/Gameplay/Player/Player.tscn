@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://game/Gameplay/Player/PlayerInputComponent.cs" id="1_input"]
 [ext_resource type="Script" path="res://game/Gameplay/Player/MovementComponent.cs" id="2_movement"]
@@ -15,6 +15,8 @@
 [ext_resource type="Resource" path="res://game/Gameplay/Player/DefaultDribbleStats.tres" id="13_dribblestats"]
 [ext_resource type="Script" path="res://game/Gameplay/Player/CharacterStateMachine.cs" id="14_statemachine"]
 [ext_resource type="Resource" path="res://game/Gameplay/Player/DefaultCharacterStateStats.tres" id="15_statestats"]
+[ext_resource type="Script" path="res://game/Presentation/Characters/AnimationController.cs" id="16_anim"]
+[ext_resource type="Resource" path="res://game/Presentation/Characters/DefaultAnimationStats.tres" id="17_animstats"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -61,14 +63,13 @@ script = ExtResource("4_possession")
 PickupArea = NodePath("../PickupArea")
 DribbleAnchor = NodePath("../DribbleAnchor")
 
-[node name="DribbleComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "Possession", "Movement", "DribbleAnchor", "Rig")]
+[node name="DribbleComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "Possession", "Movement", "DribbleAnchor")]
 script = ExtResource("12_dribble")
 Body = NodePath("..")
 Possession = NodePath("../PossessionComponent")
 Movement = NodePath("../MovementComponent")
 DribbleAnchor = NodePath("../DribbleAnchor")
 Stats = ExtResource("13_dribblestats")
-Rig = NodePath("../CharacterRig")
 OpponentGroup = &"opponent"
 
 [node name="CharacterStateMachine" type="Node" parent="." node_paths=PackedStringArray("Movement", "Possession", "Dribble")]
@@ -78,14 +79,22 @@ Possession = NodePath("../PossessionComponent")
 Dribble = NodePath("../DribbleComponent")
 Stats = ExtResource("15_statestats")
 
-[node name="ShootingComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "Possession", "Movement", "DunkSound", "Rig", "OverheadAnchor")]
+[node name="AnimationController" type="Node" parent="." node_paths=PackedStringArray("Rig", "Movement", "Dribble", "StateMachine")]
+script = ExtResource("16_anim")
+Rig = NodePath("../CharacterRig")
+Movement = NodePath("../MovementComponent")
+Dribble = NodePath("../DribbleComponent")
+StateMachine = NodePath("../CharacterStateMachine")
+Stats = ExtResource("17_animstats")
+
+[node name="ShootingComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "Possession", "Movement", "DunkSound", "Anim", "OverheadAnchor")]
 script = ExtResource("5_shooting")
 Body = NodePath("..")
 Possession = NodePath("../PossessionComponent")
 Movement = NodePath("../MovementComponent")
 Stats = ExtResource("6_shootstats")
 DunkSound = NodePath("../DunkPlayer")
-Rig = NodePath("../CharacterRig")
+Anim = NodePath("../AnimationController")
 OverheadAnchor = NodePath("../OverheadAnchor")
 
 [node name="DunkPlayer" type="AudioStreamPlayer3D" parent="."]
