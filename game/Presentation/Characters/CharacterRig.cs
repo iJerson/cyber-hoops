@@ -36,8 +36,8 @@ public partial class CharacterRig : Node3D
     [Export] public Node3D? HipPivotL { get; set; }
     [Export] public Node3D? HipPivotR { get; set; }
 
-    /// <summary>Shoulder pitch when arms are fully raised overhead, in radians.</summary>
-    [Export] public float ArmsRaisedAngle { get; set; } = -2.7f;
+    /// <summary>Shoulder pitch when arms are fully raised overhead, in radians. Positive pitches the hanging arm forward-up.</summary>
+    [Export] public float ArmsRaisedAngle { get; set; } = 2.7f;
 
     /// <summary>How fast the arms blend to/from the raised pose, per second.</summary>
     [Export] public float ArmsRaiseSpeed { get; set; } = 10.0f;
@@ -105,9 +105,10 @@ public partial class CharacterRig : Node3D
         var armR = Mathf.Lerp(swing * ArmSwing * stride, ArmsRaisedAngle, _armsRaised);
 
         // Ball-side arm pumps with the bounce while dribbling (unless mid-dunk):
-        // hand rides high with the ball, pushes down toward floor contact.
+        // arm held out in front, hand riding high with the ball, pushing down
+        // toward floor contact. Positive pitch swings the hanging arm forward.
         var dribbleWeight = _dribble * (1f - _armsRaised);
-        var pumpAngle = -0.35f - 0.55f * _dribbleBallHeight;
+        var pumpAngle = 0.35f + 0.55f * _dribbleBallHeight;
         armR = Mathf.Lerp(armR, pumpAngle, dribbleWeight);
 
         ShoulderPivotL.Rotation = new Vector3(armL, 0f, 0f);
@@ -119,7 +120,8 @@ public partial class CharacterRig : Node3D
         var breathe = (1f - stride) * 0.012f * Mathf.Sin(_idleTime * 2.2f);
         var crouch = 0.08f * dribbleWeight;
         Pelvis.Position = Pelvis.Position with { Y = _pelvisRestY + bob + breathe - crouch };
-        Pelvis.Rotation = new Vector3(0.14f * dribbleWeight, 0f, 0f);
+        // Negative pitch leans the torso forward (rig faces -Z).
+        Pelvis.Rotation = new Vector3(-0.12f * dribbleWeight, 0f, 0f);
     }
 
     private void Recolor(Node node)

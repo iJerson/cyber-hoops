@@ -42,7 +42,7 @@ Stats = ExtResource("3_movestats")
 InputSource = NodePath("../AIInputComponent")
 
 [node name="DribbleAnchor" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45, 0, -0.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0, -0.5)
 
 [node name="OverheadAnchor" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.35, -0.15)
