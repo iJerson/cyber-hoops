@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="PackedScene" path="res://game/Presentation/Court/Court.tscn" id="1_court"]
 [ext_resource type="PackedScene" path="res://game/Gameplay/Player/Player.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://game/Gameplay/Ball/Ball.tscn" id="3_ball"]
+[ext_resource type="PackedScene" path="res://game/Gameplay/AI/Opponent.tscn" id="4_opponent"]
 
 [sub_resource type="Environment" id="Environment_main"]
 ambient_light_source = 2
@@ -15,6 +16,9 @@ ambient_light_energy = 0.6
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 3)
+
+[node name="Opponent" parent="." instance=ExtResource("4_opponent")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.1, -3)
 
 [node name="Ball" parent="." instance=ExtResource("3_ball")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1, 0)

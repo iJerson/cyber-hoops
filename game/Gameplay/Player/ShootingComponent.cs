@@ -15,6 +15,9 @@ public partial class ShootingComponent : Node
     [Export] public StringName ShotTargetGroup { get; set; } = "shot_target";
 
     [Export] public StringName ShootAction { get; set; } = "shoot";
+
+    /// <summary>When true, polls the shoot input action. AI leaves this off and calls <see cref="TryShoot"/>.</summary>
+    [Export] public bool ReadPlayerInput { get; set; } = true;
     [Export] public CharacterBody3D? Body { get; set; }
     [Export] public PossessionComponent? Possession { get; set; }
     [Export] public ShootStats? Stats { get; set; }
@@ -35,21 +38,30 @@ public partial class ShootingComponent : Node
 
     public override void _PhysicsProcess(double delta)
     {
-        if (!Input.IsActionJustPressed(ShootAction) || !Possession!.HasBall)
+        if (ReadPlayerInput && Input.IsActionJustPressed(ShootAction))
         {
-            return;
+            TryShoot();
+        }
+    }
+
+    /// <summary>Shoots at the hoop if this player currently possesses the ball. Returns true when a shot was released.</summary>
+    public bool TryShoot()
+    {
+        if (!Possession!.HasBall)
+        {
+            return false;
         }
 
         if (GetTree().GetFirstNodeInGroup(ShotTargetGroup) is not Node3D target)
         {
             GD.PushWarning($"No node in group '{ShotTargetGroup}' — cannot shoot.");
-            return;
+            return false;
         }
 
-        Shoot(target.GlobalPosition);
+        return Shoot(target.GlobalPosition);
     }
 
-    private void Shoot(Vector3 targetPosition)
+    private bool Shoot(Vector3 targetPosition)
     {
         var releasePosition = Body!.GlobalPosition + Vector3.Up * Stats!.ReleaseHeight;
 
@@ -58,7 +70,7 @@ public partial class ShootingComponent : Node
         var groundDistance = groundDelta.Length();
         if (groundDistance < 0.01f)
         {
-            return;
+            return false;
         }
 
         var solution = ShotArcSolver.Solve(groundDistance, toTarget.Y, Stats.ArcClearance, _gravity);
@@ -66,9 +78,12 @@ public partial class ShootingComponent : Node
                        + Vector3.Up * (float)solution.VerticalSpeed;
 
         var ball = Possession!.ReleaseBall(velocity);
-        if (ball is not null)
+        if (ball is null)
         {
-            ball.GlobalPosition = releasePosition;
+            return false;
         }
+
+        ball.GlobalPosition = releasePosition;
+        return true;
     }
 }

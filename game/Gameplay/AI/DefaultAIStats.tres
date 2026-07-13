@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="AIStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/Gameplay/AI/AIStats.cs" id="1_stats"]
+
+[resource]
+script = ExtResource("1_stats")
+ShootRange = 4.0
+DefendDistance = 1.2
+ArriveRadius = 0.3
+SprintBeyondDistance = 4.0

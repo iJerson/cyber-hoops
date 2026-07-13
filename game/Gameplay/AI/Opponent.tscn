@@ -1,11 +1,13 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=14 format=3]
 
-[ext_resource type="Script" path="res://game/Gameplay/Player/PlayerInputComponent.cs" id="1_input"]
+[ext_resource type="Script" path="res://game/Gameplay/AI/AIInputComponent.cs" id="1_aiinput"]
 [ext_resource type="Script" path="res://game/Gameplay/Player/MovementComponent.cs" id="2_movement"]
-[ext_resource type="Resource" path="res://game/Gameplay/Player/DefaultMovementStats.tres" id="3_stats"]
+[ext_resource type="Resource" path="res://game/Gameplay/Player/DefaultMovementStats.tres" id="3_movestats"]
 [ext_resource type="Script" path="res://game/Gameplay/Player/PossessionComponent.cs" id="4_possession"]
 [ext_resource type="Script" path="res://game/Gameplay/Player/ShootingComponent.cs" id="5_shooting"]
 [ext_resource type="Resource" path="res://game/Gameplay/Player/DefaultShootStats.tres" id="6_shootstats"]
+[ext_resource type="Script" path="res://game/Gameplay/AI/AIBrainComponent.cs" id="7_brain"]
+[ext_resource type="Resource" path="res://game/Gameplay/AI/DefaultAIStats.tres" id="8_aistats"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -16,12 +18,12 @@ radius = 0.35
 height = 1.9
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
-albedo_color = Color(0.2, 0.55, 0.95, 1)
+albedo_color = Color(0.9, 0.25, 0.25, 1)
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_pickup"]
 radius = 0.9
 
-[node name="Player" type="CharacterBody3D" groups=["player"]]
+[node name="Opponent" type="CharacterBody3D"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
@@ -36,14 +38,14 @@ surface_material_override/0 = SubResource("StandardMaterial3D_body")
 transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, -0.45)
 mesh = SubResource("CapsuleMesh_body")
 
-[node name="PlayerInputComponent" type="Node" parent="."]
-script = ExtResource("1_input")
+[node name="AIInputComponent" type="Node" parent="."]
+script = ExtResource("1_aiinput")
 
 [node name="MovementComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "InputSource")]
 script = ExtResource("2_movement")
 Body = NodePath("..")
-Stats = ExtResource("3_stats")
-InputSource = NodePath("../PlayerInputComponent")
+Stats = ExtResource("3_movestats")
+InputSource = NodePath("../AIInputComponent")
 
 [node name="DribbleAnchor" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45, 0, -0.1)
@@ -62,6 +64,15 @@ Movement = NodePath("../MovementComponent")
 
 [node name="ShootingComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "Possession")]
 script = ExtResource("5_shooting")
+ReadPlayerInput = false
 Body = NodePath("..")
 Possession = NodePath("../PossessionComponent")
 Stats = ExtResource("6_shootstats")
+
+[node name="AIBrainComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "InputComponent", "Possession", "Shooting")]
+script = ExtResource("7_brain")
+Body = NodePath("..")
+InputComponent = NodePath("../AIInputComponent")
+Possession = NodePath("../PossessionComponent")
+Shooting = NodePath("../ShootingComponent")
+Stats = ExtResource("8_aistats")
