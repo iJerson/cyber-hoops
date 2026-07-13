@@ -3,19 +3,81 @@ using Godot;
 namespace CyberHoops.Presentation.Characters;
 
 /// <summary>
-/// Recolors the rig's emissive accent parts (visor, core, ring, trims) so one
-/// shared humanoid scene serves both players — cyan for the human, magenta
-/// for the CPU. Any child mesh whose override material has emission enabled
-/// is treated as an accent part.
+/// Humanoid rig with jointed limbs and procedural locomotion. Limb pivots
+/// (shoulders, hips) swing from the parent body's horizontal speed so the
+/// figure walks/runs like a human; idle gets a subtle breathing sway. Also
+/// recolors all emissive accent parts from one exported AccentColor so the
+/// same rig serves both players. Phase advances with distance travelled, so
+/// the animation is deterministic.
 /// </summary>
 [GlobalClass]
 public partial class CharacterRig : Node3D
 {
     [Export] public Color AccentColor { get; set; } = new(0.1f, 0.9f, 1f);
 
+    /// <summary>Leg swing amplitude at full run, in radians.</summary>
+    [Export] public float LegSwing { get; set; } = 0.7f;
+
+    /// <summary>Arm swing amplitude at full run, in radians.</summary>
+    [Export] public float ArmSwing { get; set; } = 0.55f;
+
+    /// <summary>Stride cycles per metre travelled.</summary>
+    [Export] public float StrideFrequency { get; set; } = 0.55f;
+
+    /// <summary>Speed treated as a full run for animation blending, in m/s.</summary>
+    [Export] public float RunSpeed { get; set; } = 8.0f;
+
+    /// <summary>Vertical body bob at full run, in metres.</summary>
+    [Export] public float BobHeight { get; set; } = 0.05f;
+
+    [Export] public Node3D? Pelvis { get; set; }
+    [Export] public Node3D? ShoulderPivotL { get; set; }
+    [Export] public Node3D? ShoulderPivotR { get; set; }
+    [Export] public Node3D? HipPivotL { get; set; }
+    [Export] public Node3D? HipPivotR { get; set; }
+
+    private CharacterBody3D? _body;
+    private float _phase;
+    private float _idleTime;
+    private float _pelvisRestY;
+
     public override void _Ready()
     {
         Recolor(this);
+        _body = GetParent() as CharacterBody3D;
+        if (Pelvis is not null)
+        {
+            _pelvisRestY = Pelvis.Position.Y;
+        }
+    }
+
+    public override void _PhysicsProcess(double delta)
+    {
+        if (Pelvis is null || ShoulderPivotL is null || ShoulderPivotR is null || HipPivotL is null || HipPivotR is null)
+        {
+            return;
+        }
+
+        var velocity = _body?.Velocity ?? Vector3.Zero;
+        var speed = (velocity with { Y = 0f }).Length();
+        var stride = Mathf.Clamp(speed / RunSpeed, 0f, 1f);
+
+        _phase += speed * (float)delta * StrideFrequency * Mathf.Tau;
+        _phase %= Mathf.Tau;
+        _idleTime += (float)delta;
+
+        var swing = Mathf.Sin(_phase);
+
+        // Legs alternate; arms counter-swing their same-side leg.
+        HipPivotL.Rotation = new Vector3(swing * LegSwing * stride, 0f, 0f);
+        HipPivotR.Rotation = new Vector3(-swing * LegSwing * stride, 0f, 0f);
+        ShoulderPivotL.Rotation = new Vector3(-swing * ArmSwing * stride, 0f, 0f);
+        ShoulderPivotR.Rotation = new Vector3(swing * ArmSwing * stride, 0f, 0f);
+
+        // Two bobs per stride while moving; slow breathing sway at rest.
+        var bob = Mathf.Abs(Mathf.Sin(_phase * 2f)) * BobHeight * stride;
+        var breathe = (1f - stride) * 0.012f * Mathf.Sin(_idleTime * 2.2f);
+        Pelvis.Position = Pelvis.Position with { Y = _pelvisRestY + bob + breathe };
     }
 
     private void Recolor(Node node)
