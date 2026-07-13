@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_stats")
-FollowOffset = Vector3(0, 9, 11)
+FollowOffset = Vector3(0, 5.5, 7)
 FollowSpeed = 4.0
-LookAtHoopBlend = 0.35
-LateralTracking = 0.6
+LookAtHoopBlend = 0.25
+LateralTracking = 0.8
