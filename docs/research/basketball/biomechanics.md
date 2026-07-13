@@ -1,6 +1,6 @@
 # Elite Movement Patterns — Universal Mechanics
 
-Companion to [Dribble-Biomechanics.md](Dribble-Biomechanics.md). This documents the
+Companion to [dribbling.md](dribbling.md). This documents the
 mechanics shared by virtually all elite players (NBA / FIBA / NCAA), as established
 by slow-motion coaching analysis and sports-biomechanics literature. Signature and
 style-specific moves are deliberately excluded. These are the invariants — the layer

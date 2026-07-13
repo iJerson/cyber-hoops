@@ -1,8 +1,8 @@
 # Animation Specification
 
-Derived from [Dribble-Biomechanics.md](Dribble-Biomechanics.md) and
-[Elite-Movement-Patterns.md](Elite-Movement-Patterns.md). Specification only — no
-implementation here.
+Derived from [dribbling.md](../research/basketball/dribbling.md) and
+[biomechanics.md](../research/basketball/biomechanics.md) in the research library.
+Specification only — no implementation here.
 
 ## Conventions
 
