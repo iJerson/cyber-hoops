@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://game/Presentation/Characters/CharacterRig.cs" id="1_rig"]
 
@@ -42,9 +42,13 @@ height = 0.18
 radius = 0.065
 height = 0.52
 
-[sub_resource type="CapsuleMesh" id="Mesh_leg"]
-radius = 0.085
-height = 0.6
+[sub_resource type="CapsuleMesh" id="Mesh_thigh"]
+radius = 0.09
+height = 0.36
+
+[sub_resource type="CapsuleMesh" id="Mesh_shin"]
+radius = 0.075
+height = 0.36
 
 [sub_resource type="BoxMesh" id="Mesh_foot"]
 size = Vector3(0.14, 0.09, 0.3)
@@ -53,7 +57,7 @@ size = Vector3(0.14, 0.09, 0.3)
 inner_radius = 0.42
 outer_radius = 0.5
 
-[node name="CharacterRig" type="Node3D" node_paths=PackedStringArray("Pelvis", "Head", "ShoulderPivotL", "ShoulderPivotR", "HipPivotL", "HipPivotR")]
+[node name="CharacterRig" type="Node3D" node_paths=PackedStringArray("Pelvis", "Head", "ShoulderPivotL", "ShoulderPivotR", "HipPivotL", "HipPivotR", "KneePivotL", "KneePivotR")]
 script = ExtResource("1_rig")
 Pelvis = NodePath("Pelvis")
 Head = NodePath("Pelvis/Head")
@@ -61,6 +65,8 @@ ShoulderPivotL = NodePath("Pelvis/ShoulderPivotL")
 ShoulderPivotR = NodePath("Pelvis/ShoulderPivotR")
 HipPivotL = NodePath("Pelvis/HipPivotL")
 HipPivotR = NodePath("Pelvis/HipPivotR")
+KneePivotL = NodePath("Pelvis/HipPivotL/KneePivotL")
+KneePivotR = NodePath("Pelvis/HipPivotR/KneePivotR")
 
 [node name="Pelvis" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
@@ -131,26 +137,42 @@ surface_material_override/0 = SubResource("Mat_joint")
 [node name="HipPivotL" type="Node3D" parent="Pelvis"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11, -0.08, 0)
 
-[node name="Leg" type="MeshInstance3D" parent="Pelvis/HipPivotL"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.32, 0)
-mesh = SubResource("Mesh_leg")
+[node name="Thigh" type="MeshInstance3D" parent="Pelvis/HipPivotL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.17, 0)
+mesh = SubResource("Mesh_thigh")
 surface_material_override/0 = SubResource("Mat_body")
 
-[node name="Foot" type="MeshInstance3D" parent="Pelvis/HipPivotL"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.66, -0.04)
+[node name="KneePivotL" type="Node3D" parent="Pelvis/HipPivotL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.34, 0)
+
+[node name="Shin" type="MeshInstance3D" parent="Pelvis/HipPivotL/KneePivotL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.17, 0)
+mesh = SubResource("Mesh_shin")
+surface_material_override/0 = SubResource("Mat_body")
+
+[node name="Foot" type="MeshInstance3D" parent="Pelvis/HipPivotL/KneePivotL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.36, -0.04)
 mesh = SubResource("Mesh_foot")
 surface_material_override/0 = SubResource("Mat_joint")
 
 [node name="HipPivotR" type="Node3D" parent="Pelvis"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11, -0.08, 0)
 
-[node name="Leg" type="MeshInstance3D" parent="Pelvis/HipPivotR"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.32, 0)
-mesh = SubResource("Mesh_leg")
+[node name="Thigh" type="MeshInstance3D" parent="Pelvis/HipPivotR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.17, 0)
+mesh = SubResource("Mesh_thigh")
 surface_material_override/0 = SubResource("Mat_body")
 
-[node name="Foot" type="MeshInstance3D" parent="Pelvis/HipPivotR"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.66, -0.04)
+[node name="KneePivotR" type="Node3D" parent="Pelvis/HipPivotR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.34, 0)
+
+[node name="Shin" type="MeshInstance3D" parent="Pelvis/HipPivotR/KneePivotR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.17, 0)
+mesh = SubResource("Mesh_shin")
+surface_material_override/0 = SubResource("Mat_body")
+
+[node name="Foot" type="MeshInstance3D" parent="Pelvis/HipPivotR/KneePivotR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.36, -0.04)
 mesh = SubResource("Mesh_foot")
 surface_material_override/0 = SubResource("Mat_joint")
 

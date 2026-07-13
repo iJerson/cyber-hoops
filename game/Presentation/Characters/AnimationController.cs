@@ -111,9 +111,25 @@ public partial class AnimationController : Node
         armL = Mathf.Lerp(armL, stats.ArmsRaisedAngle, _armsRaised);
         armR = Mathf.Lerp(armR, stats.ArmsRaisedAngle, _armsRaised);
 
+        // --- Knees: baseline flexion (never tall), swing-phase bend lagging the
+        // hip, plus bend that visually explains any crouch. Feet counter-rotate
+        // to stay level with the floor. Knee axis: positive X kicks the shin back.
+        var kneeCrouch = crouch * stats.KneeCrouchGain;
+        var kneeL = stats.KneeBaseline + kneeCrouch
+                    + Mathf.Max(0f, Mathf.Sin(gaitAngle + stats.KneePhaseOffset)) * stats.KneeSwing * stride;
+        var kneeR = stats.KneeBaseline + kneeCrouch
+                    + Mathf.Max(0f, Mathf.Sin(gaitAngle + Mathf.Pi + stats.KneePhaseOffset)) * stats.KneeSwing * stride;
+
         // --- Write channels ---
         rig.HipPivotL.Rotation = new Vector3(legL, 0f, 0f);
         rig.HipPivotR.Rotation = new Vector3(legR, 0f, 0f);
+        if (rig.KneePivotL is not null && rig.KneePivotR is not null)
+        {
+            rig.KneePivotL.Rotation = new Vector3(kneeL, 0f, 0f);
+            rig.KneePivotR.Rotation = new Vector3(kneeR, 0f, 0f);
+            LevelFoot(rig.KneePivotL, legL + kneeL, stats.FootLevelFactor);
+            LevelFoot(rig.KneePivotR, legR + kneeR, stats.FootLevelFactor);
+        }
         rig.ShoulderPivotL.Rotation = new Vector3(armL, 0f, 0f);
         rig.ShoulderPivotR.Rotation = new Vector3(armR, 0f, 0f);
         rig.Pelvis.Position = rig.Pelvis.Position with { Y = _pelvisRestY + bob + breathe - crouch };
@@ -133,6 +149,15 @@ public partial class AnimationController : Node
             _stopWeight,
             StateMachine!.CurrentState == LocomotionStates.Stop ? 1f : 0f,
             stats.LayerBlendSpeed * dt);
+    }
+
+    /// <summary>Counter-rotates the foot under a knee pivot so the sole stays near-level.</summary>
+    private static void LevelFoot(Node3D kneePivot, float legChainPitch, float levelFactor)
+    {
+        if (kneePivot.GetNodeOrNull<Node3D>("Foot") is { } foot)
+        {
+            foot.Rotation = new Vector3(-legChainPitch * levelFactor, 0f, 0f);
+        }
     }
 
     private void UpdateHead(AnimationStats stats, float dt)

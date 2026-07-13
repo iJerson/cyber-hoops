@@ -21,6 +21,21 @@ public partial class AnimationStats : Resource
     /// <summary>Vertical body bob at full run, metres.</summary>
     [Export] public float BobHeight { get; set; } = 0.05f;
 
+    /// <summary>Baseline knee flexion when live — the "never tall" rule, radians.</summary>
+    [Export] public float KneeBaseline { get; set; } = 0.15f;
+
+    /// <summary>Knee flexion amplitude during the swing phase at full run, radians.</summary>
+    [Export] public float KneeSwing { get; set; } = 0.9f;
+
+    /// <summary>Gait-phase offset of peak knee flexion after the hip swing, radians.</summary>
+    [Export] public float KneePhaseOffset { get; set; } = 1.6f;
+
+    /// <summary>Extra knee flexion per metre of crouch, radians/m.</summary>
+    [Export] public float KneeCrouchGain { get; set; } = 3.0f;
+
+    /// <summary>How much the feet counter-rotate to stay level with the ground, 0–1.</summary>
+    [Export] public float FootLevelFactor { get; set; } = 0.7f;
+
     /// <summary>Forward torso lean at full sprint, radians (arcade-exaggerated).</summary>
     [Export] public float SprintLean { get; set; } = 0.3f;
 
