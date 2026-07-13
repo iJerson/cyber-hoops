@@ -10,3 +10,4 @@ Acceleration = 30.0
 Deceleration = 40.0
 TurnSpeed = 12.0
 IdleInputThreshold = 0.1
+StrideFrequency = 0.55

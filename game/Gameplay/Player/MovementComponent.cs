@@ -1,3 +1,4 @@
+using CyberHoops.Core.Locomotion;
 using CyberHoops.Core.StateMachine;
 using Godot;
 
@@ -20,12 +21,22 @@ public partial class MovementComponent : Node
     [Export] public Node? InputSource { get; set; }
 
     private readonly StateMachine _stateMachine = new();
+    private readonly GaitClock _gaitClock = new();
     private IMovementInputSource? _input;
     private LocomotionState? _idle;
     private LocomotionState? _move;
     private LocomotionState? _sprint;
 
     public string? CurrentStateName => _stateMachine.Current?.Name;
+
+    /// <summary>Master animation clock: stride cycle phase in [0,1), advanced by distance travelled.</summary>
+    public float GaitPhase => (float)_gaitClock.Phase;
+
+    /// <summary>Current horizontal speed, m/s.</summary>
+    public float Speed { get; private set; }
+
+    /// <summary>Horizontal speed normalized against sprint speed, in [0,1].</summary>
+    public float NormalizedSpeed => Stats is null ? 0f : Mathf.Clamp(Speed / Stats.SprintSpeed, 0f, 1f);
 
     public override void _Ready()
     {
@@ -73,6 +84,9 @@ public partial class MovementComponent : Node
 
         FaceMovementDirection(body, stats, horizontal, delta);
         body.MoveAndSlide();
+
+        Speed = new Vector3(body.Velocity.X, 0f, body.Velocity.Z).Length();
+        _gaitClock.Advance(Speed * delta, stats.StrideFrequency);
     }
 
     private void UpdateLocomotionState(Vector2 direction)

@@ -26,4 +26,7 @@ public partial class MovementStats : Resource
 
     /// <summary>Input magnitude below which the player is considered idle.</summary>
     [Export] public float IdleInputThreshold { get; set; } = 0.1f;
+
+    /// <summary>Gait stride cycles per metre travelled — drives the master animation clock.</summary>
+    [Export] public float StrideFrequency { get; set; } = 0.55f;
 }
