@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="CharacterStateStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/Gameplay/Player/CharacterStateStats.cs" id="1_stats"]
+
+[resource]
+script = ExtResource("1_stats")
+IdleMaxSpeed = 0.02
+WalkMaxSpeed = 0.5
+StopDeceleration = 14.0
+StopMinSpeed = 0.15
