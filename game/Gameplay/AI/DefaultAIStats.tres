@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_stats")
-ShootRange = 4.0
+ShootRange = 3.0
 DefendDistance = 1.2
 ArriveRadius = 0.3
 SprintBeyondDistance = 4.0

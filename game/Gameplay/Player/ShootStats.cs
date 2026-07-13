@@ -13,4 +13,22 @@ public partial class ShootStats : Resource
 
     /// <summary>Height above the player origin where the ball leaves the hands, in metres.</summary>
     [Export] public float ReleaseHeight { get; set; } = 2.1f;
+
+    /// <summary>Inside this ground distance to the rim, shooting becomes a layup.</summary>
+    [Export] public float LayupRange { get; set; } = 3.2f;
+
+    /// <summary>Arc apex clearance for layups — lower and quicker than a jump shot, in metres.</summary>
+    [Export] public float LayupArcClearance { get; set; } = 0.45f;
+
+    /// <summary>Inside this ground distance to the rim, shooting becomes a dunk.</summary>
+    [Export] public float DunkRange { get; set; } = 1.8f;
+
+    /// <summary>Time of the dunk lunge from launch to slam, in seconds.</summary>
+    [Export] public float DunkDuration { get; set; } = 0.35f;
+
+    /// <summary>Peak extra height of the dunk lunge arc, in metres.</summary>
+    [Export] public float DunkJumpHeight { get; set; } = 1.1f;
+
+    /// <summary>Downward speed of the slammed ball, in m/s.</summary>
+    [Export] public float DunkSlamSpeed { get; set; } = 8.0f;
 }

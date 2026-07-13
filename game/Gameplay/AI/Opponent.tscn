@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://game/Gameplay/AI/AIInputComponent.cs" id="1_aiinput"]
 [ext_resource type="Script" path="res://game/Gameplay/Player/MovementComponent.cs" id="2_movement"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://game/Gameplay/Player/DefenseComponent.cs" id="9_defense"]
 [ext_resource type="Resource" path="res://game/Gameplay/Player/DefaultDefenseStats.tres" id="10_defensestats"]
 [ext_resource type="AudioStream" path="res://assets/audio/steal.wav" id="11_steal"]
+[ext_resource type="AudioStream" path="res://assets/audio/dunk.wav" id="12_dunk"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -92,12 +93,17 @@ PickupArea = NodePath("../PickupArea")
 DribbleAnchor = NodePath("../DribbleAnchor")
 Movement = NodePath("../MovementComponent")
 
-[node name="ShootingComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "Possession")]
+[node name="ShootingComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "Possession", "Movement", "DunkSound")]
 script = ExtResource("5_shooting")
 ReadPlayerInput = false
 Body = NodePath("..")
 Possession = NodePath("../PossessionComponent")
+Movement = NodePath("../MovementComponent")
 Stats = ExtResource("6_shootstats")
+DunkSound = NodePath("../DunkPlayer")
+
+[node name="DunkPlayer" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("12_dunk")
 
 [node name="DefenseComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "Possession", "HitSound")]
 script = ExtResource("9_defense")
