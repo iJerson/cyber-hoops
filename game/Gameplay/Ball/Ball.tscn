@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://game/Gameplay/Ball/Ball.cs" id="1_ball"]
 [ext_resource type="Resource" path="res://game/Gameplay/Ball/DefaultBallStats.tres" id="2_stats"]
+[ext_resource type="AudioStream" path="res://assets/audio/bounce.wav" id="3_bounce"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_ball"]
 radius = 0.12
@@ -13,9 +14,10 @@ height = 0.24
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ball"]
 albedo_color = Color(0.9, 0.45, 0.15, 1)
 
-[node name="Ball" type="RigidBody3D" groups=["ball"]]
+[node name="Ball" type="RigidBody3D" groups=["ball"] node_paths=PackedStringArray("BounceSound")]
 script = ExtResource("1_ball")
 Stats = ExtResource("2_stats")
+BounceSound = NodePath("BouncePlayer")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_ball")
@@ -23,3 +25,6 @@ shape = SubResource("SphereShape3D_ball")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("SphereMesh_ball")
 surface_material_override/0 = SubResource("StandardMaterial3D_ball")
+
+[node name="BouncePlayer" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("3_bounce")

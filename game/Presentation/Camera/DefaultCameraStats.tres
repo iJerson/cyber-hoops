@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="CameraStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/Presentation/Camera/CameraStats.cs" id="1_stats"]
+
+[resource]
+script = ExtResource("1_stats")
+FollowOffset = Vector3(0, 9, 11)
+FollowSpeed = 4.0
+LookAtHoopBlend = 0.35
+LateralTracking = 0.6

@@ -19,6 +19,9 @@ public partial class Ball : RigidBody3D
 
     [Export] public BallStats? Stats { get; set; }
 
+    /// <summary>Played at each dribble floor contact. Optional.</summary>
+    [Export] public AudioStreamPlayer3D? BounceSound { get; set; }
+
     /// <summary>Team index of the last shooter, or -1 when unattributed. Stamped on release.</summary>
     public int LastShooterTeam { get; set; } = -1;
 
@@ -118,7 +121,12 @@ public partial class Ball : RigidBody3D
     private void UpdateDribble(double delta)
     {
         var stats = Stats!;
+        var previousPhase = _dribbleCycle.Phase;
         var height = (float)_dribbleCycle.Advance(delta, _dribbleHeight, _gravity);
+        if (_dribbleCycle.Phase < previousPhase)
+        {
+            BounceSound?.Play();
+        }
 
         var anchorXz = _anchor!.GlobalPosition with { Y = 0f };
         var currentXz = GlobalPosition with { Y = 0f };

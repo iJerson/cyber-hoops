@@ -24,6 +24,9 @@ public partial class MatchManager : Node
     [Export] public HoopSensor? Sensor { get; set; }
     [Export] public StringName RestartAction { get; set; } = "restart";
 
+    /// <summary>Played when the match is won. Optional.</summary>
+    [Export] public AudioStreamPlayer? WinSound { get; set; }
+
     private MatchScore? _score;
     private Transform3D _humanSpawn;
     private Transform3D _aiSpawn;
@@ -74,6 +77,7 @@ public partial class MatchManager : Node
         {
             _gameOver = true;
             EmitSignal(SignalName.MatchWon, team);
+            WinSound?.Play();
             GetTree().Paused = true;
             return;
         }

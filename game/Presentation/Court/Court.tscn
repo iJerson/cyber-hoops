@@ -1,6 +1,8 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://game/Gameplay/Court/HoopSensor.cs" id="1_sensor"]
+[ext_resource type="Script" path="res://game/Presentation/Court/CourtLines.cs" id="2_lines"]
+[ext_resource type="AudioStream" path="res://assets/audio/swish.wav" id="3_swish"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(15, 0.2, 14)
@@ -33,6 +35,29 @@ radius = 0.03
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_sensor"]
 radius = 0.18
 height = 0.2
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_pole"]
+top_radius = 0.06
+bottom_radius = 0.08
+height = 3.9
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pole"]
+albedo_color = Color(0.35, 0.38, 0.42, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_net"]
+top_radius = 0.225
+bottom_radius = 0.15
+height = 0.4
+cap_top = false
+cap_bottom = false
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_net"]
+transparency = 1
+albedo_color = Color(0.95, 0.95, 0.95, 0.55)
+cull_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_backboard"]
+albedo_color = Color(0.85, 0.9, 0.95, 1)
 
 [node name="Court" type="Node3D"]
 
@@ -76,6 +101,20 @@ shape = SubResource("BoxShape3D_backboard")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Hoop/BackboardBody"]
 mesh = SubResource("BoxMesh_backboard")
+surface_material_override/0 = SubResource("StandardMaterial3D_backboard")
+
+[node name="Pole" type="MeshInstance3D" parent="Hoop"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.95, -0.55)
+mesh = SubResource("CylinderMesh_pole")
+surface_material_override/0 = SubResource("StandardMaterial3D_pole")
+
+[node name="Net" type="MeshInstance3D" parent="Hoop"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.85, 0)
+mesh = SubResource("CylinderMesh_net")
+surface_material_override/0 = SubResource("StandardMaterial3D_net")
+
+[node name="CourtLines" type="MeshInstance3D" parent="."]
+script = ExtResource("2_lines")
 
 [node name="Rim" type="MeshInstance3D" parent="Hoop"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.05, 0)
@@ -119,9 +158,13 @@ shape = SubResource("SphereShape3D_rim")
 [node name="ShotTarget" type="Node3D" parent="Hoop" groups=["shot_target"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.05, 0)
 
-[node name="MadeShotSensor" type="Area3D" parent="Hoop"]
+[node name="MadeShotSensor" type="Area3D" parent="Hoop" node_paths=PackedStringArray("SwishSound")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.85, 0)
 script = ExtResource("1_sensor")
+SwishSound = NodePath("SwishPlayer")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Hoop/MadeShotSensor"]
 shape = SubResource("CylinderShape3D_sensor")
+
+[node name="SwishPlayer" type="AudioStreamPlayer3D" parent="Hoop/MadeShotSensor"]
+stream = ExtResource("3_swish")

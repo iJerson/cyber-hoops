@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://game/Gameplay/Player/PlayerInputComponent.cs" id="1_input"]
 [ext_resource type="Script" path="res://game/Gameplay/Player/MovementComponent.cs" id="2_movement"]
@@ -8,6 +8,7 @@
 [ext_resource type="Resource" path="res://game/Gameplay/Player/DefaultShootStats.tres" id="6_shootstats"]
 [ext_resource type="Script" path="res://game/Gameplay/Player/DefenseComponent.cs" id="7_defense"]
 [ext_resource type="Resource" path="res://game/Gameplay/Player/DefaultDefenseStats.tres" id="8_defensestats"]
+[ext_resource type="AudioStream" path="res://assets/audio/steal.wav" id="9_steal"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -68,8 +69,12 @@ Body = NodePath("..")
 Possession = NodePath("../PossessionComponent")
 Stats = ExtResource("6_shootstats")
 
-[node name="DefenseComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "Possession")]
+[node name="DefenseComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "Possession", "HitSound")]
 script = ExtResource("7_defense")
 Body = NodePath("..")
 Possession = NodePath("../PossessionComponent")
 Stats = ExtResource("8_defensestats")
+HitSound = NodePath("../StealPlayer")
+
+[node name="StealPlayer" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("9_steal")

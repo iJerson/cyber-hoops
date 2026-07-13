@@ -23,6 +23,9 @@ public partial class DefenseComponent : Node
     [Export] public PossessionComponent? Possession { get; set; }
 
     [Export] public DefenseStats? Stats { get; set; }
+
+    /// <summary>Played on a successful steal or block. Optional.</summary>
+    [Export] public AudioStreamPlayer3D? HitSound { get; set; }
     [Export] public StringName BallGroup { get; set; } = "ball";
     [Export] public StringName PossessionGroup { get; set; } = "possession";
 
@@ -67,12 +70,19 @@ public partial class DefenseComponent : Node
 
         _cooldownRemaining = Stats!.CooldownSeconds;
 
-        return ball.CurrentStateName switch
+        var disturbed = ball.CurrentStateName switch
         {
             CyberHoopsBall.DribblingState or CyberHoopsBall.HeldState => TrySteal(ball),
             CyberHoopsBall.FreeState => TryBlock(ball),
             _ => false,
         };
+
+        if (disturbed)
+        {
+            HitSound?.Play();
+        }
+
+        return disturbed;
     }
 
     private bool TrySteal(CyberHoopsBall ball)
