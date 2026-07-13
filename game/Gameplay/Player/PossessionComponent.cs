@@ -23,6 +23,9 @@ public partial class PossessionComponent : Node
     /// <summary>Used to match dribble height to Idle vs Move/Sprint.</summary>
     [Export] public MovementComponent? Movement { get; set; }
 
+    /// <summary>Rig posed while dribbling (arm pump, crouch). Optional.</summary>
+    [Export] public Presentation.Characters.CharacterRig? Rig { get; set; }
+
     private CyberHoopsBall? _ball;
 
     public bool HasBall => _ball is not null;
@@ -43,11 +46,23 @@ public partial class PossessionComponent : Node
     {
         if (_ball?.Stats is not { } stats)
         {
+            Rig?.SetDribble(0f, 0f);
             return;
         }
 
         var isIdle = Movement!.CurrentStateName == LocomotionStateNames.Idle;
         _ball.SetDribbleHeight(isIdle ? stats.IdleDribbleHeight : stats.MovingDribbleHeight);
+
+        if (_ball.CurrentStateName == CyberHoopsBall.DribblingState)
+        {
+            var phase = (float)_ball.DribblePhase;
+            var ballHeight = 4f * phase * (1f - phase); // same parabola as the bounce
+            Rig?.SetDribble(1f, ballHeight);
+        }
+        else
+        {
+            Rig?.SetDribble(0f, 0f);
+        }
     }
 
     /// <summary>Glues the held ball to an anchor (dunk carry, shot wind-up). Defaults to the dribble anchor.</summary>

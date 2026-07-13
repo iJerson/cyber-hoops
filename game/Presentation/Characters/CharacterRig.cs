@@ -48,9 +48,23 @@ public partial class CharacterRig : Node3D
     private float _pelvisRestY;
     private float _armsRaisedTarget;
     private float _armsRaised;
+    private float _dribbleTarget;
+    private float _dribble;
+    private float _dribbleBallHeight;
 
     /// <summary>0 = arms follow gait, 1 = both arms overhead (dunk wind-up).</summary>
     public void SetArmsRaised(float amount) => _armsRaisedTarget = Mathf.Clamp(amount, 0f, 1f);
+
+    /// <summary>
+    /// Drives the dribble pose: crouch + the ball-side arm pumping with the
+    /// bounce. <paramref name="ballHeight"/> is the normalized ball height in
+    /// [0,1] (0 = floor contact, 1 = top of bounce).
+    /// </summary>
+    public void SetDribble(float amount, float ballHeight)
+    {
+        _dribbleTarget = Mathf.Clamp(amount, 0f, 1f);
+        _dribbleBallHeight = Mathf.Clamp(ballHeight, 0f, 1f);
+    }
 
     public override void _Ready()
     {
@@ -85,15 +99,27 @@ public partial class CharacterRig : Node3D
 
         // Blend gait swing against the raised-overhead pose (dunks).
         _armsRaised = Mathf.MoveToward(_armsRaised, _armsRaisedTarget, ArmsRaiseSpeed * (float)delta);
+        _dribble = Mathf.MoveToward(_dribble, _dribbleTarget, ArmsRaiseSpeed * (float)delta);
+
         var armL = Mathf.Lerp(-swing * ArmSwing * stride, ArmsRaisedAngle, _armsRaised);
         var armR = Mathf.Lerp(swing * ArmSwing * stride, ArmsRaisedAngle, _armsRaised);
+
+        // Ball-side arm pumps with the bounce while dribbling (unless mid-dunk):
+        // hand rides high with the ball, pushes down toward floor contact.
+        var dribbleWeight = _dribble * (1f - _armsRaised);
+        var pumpAngle = -0.35f - 0.55f * _dribbleBallHeight;
+        armR = Mathf.Lerp(armR, pumpAngle, dribbleWeight);
+
         ShoulderPivotL.Rotation = new Vector3(armL, 0f, 0f);
         ShoulderPivotR.Rotation = new Vector3(armR, 0f, 0f);
 
-        // Two bobs per stride while moving; slow breathing sway at rest.
+        // Two bobs per stride while moving; slow breathing sway at rest;
+        // slight crouch and forward lean while dribbling.
         var bob = Mathf.Abs(Mathf.Sin(_phase * 2f)) * BobHeight * stride;
         var breathe = (1f - stride) * 0.012f * Mathf.Sin(_idleTime * 2.2f);
-        Pelvis.Position = Pelvis.Position with { Y = _pelvisRestY + bob + breathe };
+        var crouch = 0.08f * dribbleWeight;
+        Pelvis.Position = Pelvis.Position with { Y = _pelvisRestY + bob + breathe - crouch };
+        Pelvis.Rotation = new Vector3(0.14f * dribbleWeight, 0f, 0f);
     }
 
     private void Recolor(Node node)

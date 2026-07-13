@@ -28,6 +28,9 @@ public partial class Ball : RigidBody3D
     /// <summary>Ground distance from hoop at the moment of the last shot, for 2/3-point scoring.</summary>
     public float LastShotGroundDistance { get; set; }
 
+    /// <summary>Current dribble bounce phase in [0,1); drives the handler's arm animation.</summary>
+    public double DribblePhase => _dribbleCycle.Phase;
+
     private readonly StateMachine _stateMachine = new();
     private readonly DribbleCycle _dribbleCycle = new();
     private Node3D? _anchor;

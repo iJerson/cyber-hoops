@@ -52,11 +52,12 @@ collision_mask = 4
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("SphereShape3D_pickup")
 
-[node name="PossessionComponent" type="Node" parent="." node_paths=PackedStringArray("PickupArea", "DribbleAnchor", "Movement")]
+[node name="PossessionComponent" type="Node" parent="." node_paths=PackedStringArray("PickupArea", "DribbleAnchor", "Movement", "Rig")]
 script = ExtResource("4_possession")
 PickupArea = NodePath("../PickupArea")
 DribbleAnchor = NodePath("../DribbleAnchor")
 Movement = NodePath("../MovementComponent")
+Rig = NodePath("../CharacterRig")
 
 [node name="ShootingComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "Possession", "Movement", "DunkSound", "Rig", "OverheadAnchor")]
 script = ExtResource("5_shooting")
