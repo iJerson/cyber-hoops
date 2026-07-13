@@ -8,6 +8,4 @@ Radius = 0.12
 Mass = 0.62
 Bounciness = 0.8
 Friction = 0.6
-IdleDribbleHeight = 0.9
-MovingDribbleHeight = 0.55
 DribbleFollowSpeed = 12.0

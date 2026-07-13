@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://game/Gameplay/AI/AIInputComponent.cs" id="1_aiinput"]
 [ext_resource type="Script" path="res://game/Gameplay/Player/MovementComponent.cs" id="2_movement"]
@@ -13,6 +13,8 @@
 [ext_resource type="AudioStream" path="res://assets/audio/steal.wav" id="11_steal"]
 [ext_resource type="AudioStream" path="res://assets/audio/dunk.wav" id="12_dunk"]
 [ext_resource type="PackedScene" path="res://game/Presentation/Characters/CharacterRig.tscn" id="13_rig"]
+[ext_resource type="Script" path="res://game/Gameplay/Player/DribbleComponent.cs" id="14_dribble"]
+[ext_resource type="Resource" path="res://game/Gameplay/Player/DefaultDribbleStats.tres" id="15_dribblestats"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -21,7 +23,7 @@ height = 1.9
 [sub_resource type="SphereShape3D" id="SphereShape3D_pickup"]
 radius = 0.9
 
-[node name="Opponent" type="CharacterBody3D"]
+[node name="Opponent" type="CharacterBody3D" groups=["opponent"]]
 collision_layer = 2
 collision_mask = 3
 
@@ -54,13 +56,21 @@ collision_mask = 4
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("SphereShape3D_pickup")
 
-[node name="PossessionComponent" type="Node" parent="." node_paths=PackedStringArray("PickupArea", "DribbleAnchor", "Movement", "Rig")]
+[node name="PossessionComponent" type="Node" parent="." node_paths=PackedStringArray("PickupArea", "DribbleAnchor")]
 script = ExtResource("4_possession")
 TeamId = 1
 PickupArea = NodePath("../PickupArea")
 DribbleAnchor = NodePath("../DribbleAnchor")
+
+[node name="DribbleComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "Possession", "Movement", "DribbleAnchor", "Rig")]
+script = ExtResource("14_dribble")
+Body = NodePath("..")
+Possession = NodePath("../PossessionComponent")
 Movement = NodePath("../MovementComponent")
+DribbleAnchor = NodePath("../DribbleAnchor")
+Stats = ExtResource("15_dribblestats")
 Rig = NodePath("../CharacterRig")
+OpponentGroup = &"player"
 
 [node name="ShootingComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "Possession", "Movement", "DunkSound", "Rig", "OverheadAnchor")]
 script = ExtResource("5_shooting")

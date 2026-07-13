@@ -4,10 +4,9 @@ using CyberHoopsBall = CyberHoops.Gameplay.Ball.Ball;
 namespace CyberHoops.Gameplay.Player;
 
 /// <summary>
-/// Gives a player possession of the ball. A pickup <see cref="Area3D"/>
-/// detects the free ball and starts a dribble at the anchor; dribble height
-/// follows the locomotion state. Exposes a release API for future
-/// shoot/pass/steal mechanics.
+/// Ownership rules only: a pickup <see cref="Area3D"/> detects the free ball
+/// and claims it; release/hold APIs serve shooting, dunks and steals. How the
+/// possessed ball bounces is <see cref="DribbleComponent"/>'s job.
 /// </summary>
 [GlobalClass]
 public partial class PossessionComponent : Node
@@ -17,52 +16,26 @@ public partial class PossessionComponent : Node
 
     [Export] public Area3D? PickupArea { get; set; }
 
-    /// <summary>Where the dribble happens, e.g. beside the player's hand.</summary>
+    /// <summary>Where the dribble happens; placed each tick by DribbleComponent.</summary>
     [Export] public Node3D? DribbleAnchor { get; set; }
-
-    /// <summary>Used to match dribble height to Idle vs Move/Sprint.</summary>
-    [Export] public MovementComponent? Movement { get; set; }
-
-    /// <summary>Rig posed while dribbling (arm pump, crouch). Optional.</summary>
-    [Export] public Presentation.Characters.CharacterRig? Rig { get; set; }
 
     private CyberHoopsBall? _ball;
 
     public bool HasBall => _ball is not null;
 
+    /// <summary>The possessed ball, if any. Read by DribbleComponent.</summary>
+    public CyberHoopsBall? Ball => _ball;
+
     public override void _Ready()
     {
-        if (PickupArea is null || DribbleAnchor is null || Movement is null)
+        if (PickupArea is null || DribbleAnchor is null)
         {
-            GD.PushError($"{nameof(PossessionComponent)} requires {nameof(PickupArea)}, {nameof(DribbleAnchor)} and {nameof(Movement)}.");
+            GD.PushError($"{nameof(PossessionComponent)} requires {nameof(PickupArea)} and {nameof(DribbleAnchor)}.");
             return;
         }
 
         PickupArea.BodyEntered += OnBodyEntered;
         AddToGroup("possession");
-    }
-
-    public override void _PhysicsProcess(double delta)
-    {
-        if (_ball?.Stats is not { } stats)
-        {
-            Rig?.SetDribble(0f, 0f);
-            return;
-        }
-
-        var isIdle = Movement!.CurrentStateName == LocomotionStateNames.Idle;
-        _ball.SetDribbleHeight(isIdle ? stats.IdleDribbleHeight : stats.MovingDribbleHeight);
-
-        if (_ball.CurrentStateName == CyberHoopsBall.DribblingState)
-        {
-            var phase = (float)_ball.DribblePhase;
-            var ballHeight = 4f * phase * (1f - phase); // same parabola as the bounce
-            Rig?.SetDribble(1f, ballHeight);
-        }
-        else
-        {
-            Rig?.SetDribble(0f, 0f);
-        }
     }
 
     /// <summary>Glues the held ball to an anchor (dunk carry, shot wind-up). Defaults to the dribble anchor.</summary>

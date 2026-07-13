@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="DribbleStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/Gameplay/Player/DribbleStats.cs" id="1_stats"]
+
+[resource]
+script = ExtResource("1_stats")
+IdleHeight = 0.9
+MovingHeight = 0.55
+ProtectHeight = 0.45
+IdleTempoMultiplier = 1.15
+ProtectTempoMultiplier = 1.5
+WalkBouncesPerCycle = 1.0
+RunBouncesPerCycle = 0.5
+ProtectEnterRadius = 1.5
+ProtectExitRadius = 2.0
+IdleAnchorOffset = Vector2(0.3, 0.5)
+RunAheadDistance = 0.85
+ProtectAnchorOffset = Vector2(0.4, -0.15)
+AnchorMoveSpeed = 6.0

@@ -1,4 +1,3 @@
-using CyberHoops.Core.Dribble;
 using CyberHoops.Core.StateMachine;
 using Godot;
 
@@ -28,14 +27,9 @@ public partial class Ball : RigidBody3D
     /// <summary>Ground distance from hoop at the moment of the last shot, for 2/3-point scoring.</summary>
     public float LastShotGroundDistance { get; set; }
 
-    /// <summary>Current dribble bounce phase in [0,1); drives the handler's arm animation.</summary>
-    public double DribblePhase => _dribbleCycle.Phase;
-
     private readonly StateMachine _stateMachine = new();
-    private readonly DribbleCycle _dribbleCycle = new();
     private Node3D? _anchor;
-    private float _dribbleHeight;
-    private float _gravity;
+    private float _bounceHeight;
 
     public string? CurrentStateName => _stateMachine.Current?.Name;
 
@@ -57,15 +51,12 @@ public partial class Ball : RigidBody3D
             Bounce = Stats.Bounciness,
             Friction = Stats.Friction,
         };
-        _gravity = (float)ProjectSettings.GetSetting("physics/3d/default_gravity").AsDouble();
-        _dribbleHeight = Stats.IdleDribbleHeight;
-
         _stateMachine.AddState(new BallModeState(FreeState, enter: () => Freeze = false));
         _stateMachine.AddState(new BallModeState(HeldState, enter: () => Freeze = true));
         _stateMachine.AddState(new BallModeState(DribblingState, enter: () =>
         {
             Freeze = true;
-            _dribbleCycle.Reset();
+            _bounceHeight = 0f;
         }));
         _stateMachine.TransitionTo(FreeState);
     }
@@ -84,8 +75,19 @@ public partial class Ball : RigidBody3D
         _stateMachine.TransitionTo(DribblingState);
     }
 
-    /// <summary>Sets the current dribble peak height (idle vs moving), in metres.</summary>
-    public void SetDribbleHeight(float height) => _dribbleHeight = height;
+    /// <summary>
+    /// Drives the dribble bounce for this tick: current ball height above the
+    /// floor and whether this tick is a floor contact (plays the bounce sound).
+    /// Called by the handler's DribbleComponent, which owns the bounce clock.
+    /// </summary>
+    public void SetBounce(float heightAboveFloor, bool contact)
+    {
+        _bounceHeight = heightAboveFloor;
+        if (contact)
+        {
+            BounceSound?.Play();
+        }
+    }
 
     /// <summary>Releases the ball back to free physics with the given velocity (shot, pass, steal knock-away).</summary>
     public void Release(Vector3 velocity)
@@ -124,18 +126,11 @@ public partial class Ball : RigidBody3D
     private void UpdateDribble(double delta)
     {
         var stats = Stats!;
-        var previousPhase = _dribbleCycle.Phase;
-        var height = (float)_dribbleCycle.Advance(delta, _dribbleHeight, _gravity);
-        if (_dribbleCycle.Phase < previousPhase)
-        {
-            BounceSound?.Play();
-        }
-
         var anchorXz = _anchor!.GlobalPosition with { Y = 0f };
         var currentXz = GlobalPosition with { Y = 0f };
         var followedXz = currentXz.MoveToward(anchorXz, stats.DribbleFollowSpeed * (float)delta);
 
-        GlobalPosition = new Vector3(followedXz.X, stats.Radius + height, followedXz.Z);
+        GlobalPosition = new Vector3(followedXz.X, stats.Radius + _bounceHeight, followedXz.Z);
     }
 
     /// <summary>Minimal state for ball modes: per-tick work happens in <see cref="Ball._PhysicsProcess"/>.</summary>
