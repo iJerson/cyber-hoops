@@ -1,9 +1,11 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://game/Gameplay/Player/PlayerInputComponent.cs" id="1_input"]
 [ext_resource type="Script" path="res://game/Gameplay/Player/MovementComponent.cs" id="2_movement"]
 [ext_resource type="Resource" path="res://game/Gameplay/Player/DefaultMovementStats.tres" id="3_stats"]
 [ext_resource type="Script" path="res://game/Gameplay/Player/PossessionComponent.cs" id="4_possession"]
+[ext_resource type="Script" path="res://game/Gameplay/Player/ShootingComponent.cs" id="5_shooting"]
+[ext_resource type="Resource" path="res://game/Gameplay/Player/DefaultShootStats.tres" id="6_shootstats"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -57,3 +59,9 @@ script = ExtResource("4_possession")
 PickupArea = NodePath("../PickupArea")
 DribbleAnchor = NodePath("../DribbleAnchor")
 Movement = NodePath("../MovementComponent")
+
+[node name="ShootingComponent" type="Node" parent="." node_paths=PackedStringArray("Body", "Possession")]
+script = ExtResource("5_shooting")
+Body = NodePath("..")
+Possession = NodePath("../PossessionComponent")
+Stats = ExtResource("6_shootstats")

@@ -1,4 +1,6 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://game/Gameplay/Court/HoopSensor.cs" id="1_sensor"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(15, 0.2, 14)
@@ -18,9 +20,19 @@ size = Vector3(15, 4, 0.5)
 [sub_resource type="BoxMesh" id="BoxMesh_backboard"]
 size = Vector3(1.8, 1.05, 0.05)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_backboard"]
+size = Vector3(1.8, 1.05, 0.05)
+
 [sub_resource type="TorusMesh" id="TorusMesh_rim"]
 inner_radius = 0.2
 outer_radius = 0.25
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_rim"]
+radius = 0.03
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_sensor"]
+radius = 0.18
+height = 0.2
 
 [node name="Court" type="Node3D"]
 
@@ -53,13 +65,63 @@ shape = SubResource("BoxShape3D_wall_z")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 7.25)
 shape = SubResource("BoxShape3D_wall_z")
 
-[node name="HoopPlaceholder" type="Node3D" parent="."]
+[node name="Hoop" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6)
 
-[node name="Backboard" type="MeshInstance3D" parent="HoopPlaceholder"]
+[node name="BackboardBody" type="StaticBody3D" parent="Hoop"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, -0.4)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hoop/BackboardBody"]
+shape = SubResource("BoxShape3D_backboard")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Hoop/BackboardBody"]
 mesh = SubResource("BoxMesh_backboard")
 
-[node name="Rim" type="MeshInstance3D" parent="HoopPlaceholder"]
+[node name="Rim" type="MeshInstance3D" parent="Hoop"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.05, 0)
 mesh = SubResource("TorusMesh_rim")
+
+[node name="RimBody" type="StaticBody3D" parent="Hoop"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.05, 0)
+
+[node name="Seg0" type="CollisionShape3D" parent="Hoop/RimBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.225, 0, 0)
+shape = SubResource("SphereShape3D_rim")
+
+[node name="Seg1" type="CollisionShape3D" parent="Hoop/RimBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.159, 0, 0.159)
+shape = SubResource("SphereShape3D_rim")
+
+[node name="Seg2" type="CollisionShape3D" parent="Hoop/RimBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.225)
+shape = SubResource("SphereShape3D_rim")
+
+[node name="Seg3" type="CollisionShape3D" parent="Hoop/RimBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.159, 0, 0.159)
+shape = SubResource("SphereShape3D_rim")
+
+[node name="Seg4" type="CollisionShape3D" parent="Hoop/RimBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.225, 0, 0)
+shape = SubResource("SphereShape3D_rim")
+
+[node name="Seg5" type="CollisionShape3D" parent="Hoop/RimBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.159, 0, -0.159)
+shape = SubResource("SphereShape3D_rim")
+
+[node name="Seg6" type="CollisionShape3D" parent="Hoop/RimBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.225)
+shape = SubResource("SphereShape3D_rim")
+
+[node name="Seg7" type="CollisionShape3D" parent="Hoop/RimBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.159, 0, -0.159)
+shape = SubResource("SphereShape3D_rim")
+
+[node name="ShotTarget" type="Node3D" parent="Hoop" groups=["shot_target"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.05, 0)
+
+[node name="MadeShotSensor" type="Area3D" parent="Hoop"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.85, 0)
+script = ExtResource("1_sensor")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hoop/MadeShotSensor"]
+shape = SubResource("CylinderShape3D_sensor")
