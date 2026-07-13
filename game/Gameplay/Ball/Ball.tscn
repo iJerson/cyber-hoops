@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://game/Gameplay/Ball/Ball.cs" id="1_ball"]
+[ext_resource type="Script" path="res://game/Presentation/Ball/BallVisual.cs" id="4_visual"]
 [ext_resource type="Resource" path="res://game/Gameplay/Ball/DefaultBallStats.tres" id="2_stats"]
 [ext_resource type="AudioStream" path="res://assets/audio/bounce.wav" id="3_bounce"]
 
@@ -30,6 +31,7 @@ shape = SubResource("SphereShape3D_ball")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("SphereMesh_ball")
 surface_material_override/0 = SubResource("StandardMaterial3D_ball")
+script = ExtResource("4_visual")
 
 [node name="BouncePlayer" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("3_bounce")
