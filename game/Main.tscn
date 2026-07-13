@@ -1,9 +1,12 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="PackedScene" path="res://game/Presentation/Court/Court.tscn" id="1_court"]
 [ext_resource type="PackedScene" path="res://game/Gameplay/Player/Player.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://game/Gameplay/Ball/Ball.tscn" id="3_ball"]
 [ext_resource type="PackedScene" path="res://game/Gameplay/AI/Opponent.tscn" id="4_opponent"]
+[ext_resource type="Script" path="res://game/Gameplay/Match/MatchManager.cs" id="5_match"]
+[ext_resource type="Resource" path="res://game/Gameplay/Match/DefaultMatchRules.tres" id="6_rules"]
+[ext_resource type="Script" path="res://game/Presentation/UI/HudComponent.cs" id="7_hud"]
 
 [sub_resource type="Environment" id="Environment_main"]
 ambient_light_source = 2
@@ -33,3 +36,45 @@ shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_main")
+
+[node name="MatchManager" type="Node" parent="." node_paths=PackedStringArray("HumanPlayer", "AIPlayer", "Ball", "Sensor")]
+script = ExtResource("5_match")
+Rules = ExtResource("6_rules")
+HumanPlayer = NodePath("../Player")
+AIPlayer = NodePath("../Opponent")
+Ball = NodePath("../Ball")
+Sensor = NodePath("../Court/Hoop/MadeShotSensor")
+
+[node name="Hud" type="CanvasLayer" parent="." node_paths=PackedStringArray("Match", "ScoreLabel", "MessageLabel")]
+script = ExtResource("7_hud")
+Match = NodePath("../MatchManager")
+ScoreLabel = NodePath("ScoreLabel")
+MessageLabel = NodePath("MessageLabel")
+
+[node name="ScoreLabel" type="Label" parent="Hud"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -150.0
+offset_right = 150.0
+offset_top = 16.0
+offset_bottom = 56.0
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+text = "YOU 0  —  0 CPU"
+
+[node name="MessageLabel" type="Label" parent="Hud"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_right = 300.0
+offset_top = -60.0
+offset_bottom = 60.0
+theme_override_font_sizes/font_size = 42
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "YOU WIN!"
+visible = false

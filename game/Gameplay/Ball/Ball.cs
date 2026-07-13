@@ -19,6 +19,12 @@ public partial class Ball : RigidBody3D
 
     [Export] public BallStats? Stats { get; set; }
 
+    /// <summary>Team index of the last shooter, or -1 when unattributed. Stamped on release.</summary>
+    public int LastShooterTeam { get; set; } = -1;
+
+    /// <summary>Ground distance from hoop at the moment of the last shot, for 2/3-point scoring.</summary>
+    public float LastShotGroundDistance { get; set; }
+
     private readonly StateMachine _stateMachine = new();
     private readonly DribbleCycle _dribbleCycle = new();
     private Node3D? _anchor;
@@ -81,6 +87,17 @@ public partial class Ball : RigidBody3D
         _anchor = null;
         _stateMachine.TransitionTo(FreeState);
         LinearVelocity = velocity;
+    }
+
+    /// <summary>Teleports the ball to a point as a fresh free ball (post-basket check ball).</summary>
+    public void ResetAt(Vector3 position)
+    {
+        _anchor = null;
+        LastShooterTeam = -1;
+        _stateMachine.TransitionTo(FreeState);
+        LinearVelocity = Vector3.Zero;
+        AngularVelocity = Vector3.Zero;
+        GlobalPosition = position;
     }
 
     public override void _PhysicsProcess(double delta)

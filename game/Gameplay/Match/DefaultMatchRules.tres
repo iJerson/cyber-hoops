@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="MatchRules" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/Gameplay/Match/MatchRules.cs" id="1_rules"]
+
+[resource]
+script = ExtResource("1_rules")
+TargetScore = 21
+InsideShotPoints = 2
+OutsideShotPoints = 3
+ThreePointDistance = 6.75
+CheckBallOffset = 1.0

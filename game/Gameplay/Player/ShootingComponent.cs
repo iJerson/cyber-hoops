@@ -84,6 +84,7 @@ public partial class ShootingComponent : Node
         }
 
         ball.GlobalPosition = releasePosition;
+        ball.LastShotGroundDistance = groundDistance;
         return true;
     }
 }

@@ -12,6 +12,9 @@ namespace CyberHoops.Gameplay.Player;
 [GlobalClass]
 public partial class PossessionComponent : Node
 {
+    /// <summary>Score slot for this player: 0 = human, 1 = AI opponent.</summary>
+    [Export] public int TeamId { get; set; }
+
     [Export] public Area3D? PickupArea { get; set; }
 
     /// <summary>Where the dribble happens, e.g. beside the player's hand.</summary>
@@ -51,7 +54,12 @@ public partial class PossessionComponent : Node
     {
         var ball = _ball;
         _ball = null;
-        ball?.Release(velocity);
+        if (ball is not null)
+        {
+            ball.LastShooterTeam = TeamId;
+            ball.Release(velocity);
+        }
+
         return ball;
     }
 
