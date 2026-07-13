@@ -4,10 +4,10 @@
 
 [resource]
 script = ExtResource("1_stats")
-StealRange = 1.9
+StealRange = 1.0
 StealKnockSpeed = 3.5
 StealPopSpeed = 2.0
-BlockRange = 2.0
+BlockRange = 1.8
 BlockMinBallHeight = 1.5
 BlockDeflectSpeed = 6.0
-CooldownSeconds = 0.5
+CooldownSeconds = 2.5

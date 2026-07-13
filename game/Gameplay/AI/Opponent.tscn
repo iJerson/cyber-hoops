@@ -9,7 +9,7 @@
 [ext_resource type="Script" path="res://game/Gameplay/AI/AIBrainComponent.cs" id="7_brain"]
 [ext_resource type="Resource" path="res://game/Gameplay/AI/DefaultAIStats.tres" id="8_aistats"]
 [ext_resource type="Script" path="res://game/Gameplay/Player/DefenseComponent.cs" id="9_defense"]
-[ext_resource type="Resource" path="res://game/Gameplay/Player/DefaultDefenseStats.tres" id="10_defensestats"]
+[ext_resource type="Resource" path="res://game/Gameplay/AI/AIDefenseStats.tres" id="10_defensestats"]
 [ext_resource type="AudioStream" path="res://assets/audio/steal.wav" id="11_steal"]
 [ext_resource type="AudioStream" path="res://assets/audio/dunk.wav" id="12_dunk"]
 
