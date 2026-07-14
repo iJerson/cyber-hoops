@@ -69,7 +69,7 @@ public partial class AnimationStats : Resource
     // --- Dribble layer (layer 1) ---
 
     /// <summary>Crouch depth while dribbling, metres.</summary>
-    [Export] public float DribbleCrouch { get; set; } = 0.14f;
+    [Export] public float DribbleCrouch { get; set; } = 0.05f;
 
     /// <summary>
     /// Extra crouch at full sprint while dribbling, metres — brings the
@@ -87,7 +87,7 @@ public partial class AnimationStats : Resource
     /// Fades out as speed rises (gait swing takes over — one motion source
     /// at a time, same rule as the breathing/bob handoff).
     /// </summary>
-    [Export] public float DribbleLifeKnee { get; set; } = 0.18f;
+    [Export] public float DribbleLifeKnee { get; set; } = 0.08f;
 
     /// <summary>Extra pelvis sink synced to the ball's bounce phase while standing and dribbling, metres.</summary>
     [Export] public float DribbleLifeBob { get; set; } = 0.02f;
