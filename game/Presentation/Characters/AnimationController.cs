@@ -91,12 +91,23 @@ public partial class AnimationController : Node
         var pelvisYaw = 0f;
         var crouch = 0f;
 
+        // Elbow baseline: a dead-straight elbow reads unnatural even at rest.
+        // Bends more at the rear of the swing (natural running arm carry).
+        var elbowGaitL = stats.ElbowBaseline + stats.ElbowGaitSwing * stride * Mathf.Max(0f, -armSwing);
+        var elbowGaitR = stats.ElbowBaseline + stats.ElbowGaitSwing * stride * Mathf.Max(0f, armSwing);
+        var elbowL = elbowGaitL;
+        var elbowR = elbowGaitR;
+
         // --- Layer 1: dribble (arms + posture) ---
         var dribbleWeight = _dribbleWeight * (1f - _armsRaised);
         if (dribbleWeight > 0f)
         {
             var pump = stats.DribblePumpBase + stats.DribblePumpRange * Dribble!.NormalizedBallHeight;
             armR = Mathf.Lerp(armR, pump, dribbleWeight);
+            // Forearm does most of the visible dribble work, same as a real
+            // dribble — the elbow bends more than the shoulder swings.
+            var elbowPump = stats.ElbowBaseline + stats.ElbowDribbleRange * Dribble.NormalizedBallHeight;
+            elbowR = Mathf.Lerp(elbowR, elbowPump, dribbleWeight);
             lean += -stats.DribbleLean * dribbleWeight;
             crouch += stats.DribbleCrouch * dribbleWeight;
 
@@ -108,6 +119,7 @@ public partial class AnimationController : Node
                 pelvisYaw = stats.ProtectYaw * _protectSide * protect;
                 crouch += stats.ProtectCrouch * protect;
                 armL = Mathf.Lerp(armL, stats.ShieldArmPitch, protect);
+                elbowL = Mathf.Lerp(elbowL, stats.ElbowShieldBend, protect);
             }
         }
 
@@ -118,6 +130,8 @@ public partial class AnimationController : Node
         // --- Layer 2: action override (arms overhead) ---
         armL = Mathf.Lerp(armL, stats.ArmsRaisedAngle, _armsRaised);
         armR = Mathf.Lerp(armR, stats.ArmsRaisedAngle, _armsRaised);
+        elbowL = Mathf.Lerp(elbowL, stats.ElbowRaisedBend, _armsRaised);
+        elbowR = Mathf.Lerp(elbowR, stats.ElbowRaisedBend, _armsRaised);
 
         // --- Dunk flight: legs tuck instead of freezing in the last stride pose ---
         if (_armsRaised > 0f)
@@ -148,6 +162,11 @@ public partial class AnimationController : Node
         }
         rig.ShoulderPivotL.Rotation = new Vector3(armL, 0f, 0f);
         rig.ShoulderPivotR.Rotation = new Vector3(armR, 0f, 0f);
+        if (rig.ElbowPivotL is not null && rig.ElbowPivotR is not null)
+        {
+            rig.ElbowPivotL.Rotation = new Vector3(elbowL, 0f, 0f);
+            rig.ElbowPivotR.Rotation = new Vector3(elbowR, 0f, 0f);
+        }
         rig.Pelvis.Position = rig.Pelvis.Position with { Y = _pelvisRestY + bob + breathe - crouch };
         rig.Pelvis.Rotation = new Vector3(lean, pelvisYaw, 0f);
 

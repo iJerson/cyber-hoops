@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://game/Presentation/Characters/CharacterRig.cs" id="1_rig"]
 
@@ -18,46 +18,61 @@ emission_enabled = true
 emission = Color(0.1, 0.9, 1, 1)
 emission_energy_multiplier = 2.2
 
-[sub_resource type="BoxMesh" id="Mesh_torso"]
-size = Vector3(0.44, 0.5, 0.26)
-
-[sub_resource type="BoxMesh" id="Mesh_hips"]
-size = Vector3(0.36, 0.2, 0.24)
-
-[sub_resource type="SphereMesh" id="Mesh_head"]
-radius = 0.14
+[sub_resource type="CapsuleMesh" id="Mesh_waist"]
+radius = 0.155
 height = 0.28
 
-[sub_resource type="BoxMesh" id="Mesh_visor"]
-size = Vector3(0.22, 0.07, 0.1)
+[sub_resource type="CapsuleMesh" id="Mesh_chest"]
+radius = 0.165
+height = 0.46
+
+[sub_resource type="CapsuleMesh" id="Mesh_neck"]
+radius = 0.06
+height = 0.14
+
+[sub_resource type="SphereMesh" id="Mesh_head"]
+radius = 0.115
+height = 0.23
+
+[sub_resource type="CapsuleMesh" id="Mesh_visor"]
+radius = 0.03
+height = 0.2
 
 [sub_resource type="BoxMesh" id="Mesh_core"]
-size = Vector3(0.16, 0.16, 0.04)
+size = Vector3(0.1, 0.14, 0.03)
 
-[sub_resource type="SphereMesh" id="Mesh_joint_ball"]
-radius = 0.09
-height = 0.18
+[sub_resource type="SphereMesh" id="Mesh_shoulder"]
+radius = 0.075
+height = 0.15
 
-[sub_resource type="CapsuleMesh" id="Mesh_arm"]
-radius = 0.065
-height = 0.52
+[sub_resource type="CapsuleMesh" id="Mesh_upperarm"]
+radius = 0.055
+height = 0.28
+
+[sub_resource type="CapsuleMesh" id="Mesh_forearm"]
+radius = 0.047
+height = 0.26
+
+[sub_resource type="CapsuleMesh" id="Mesh_hand"]
+radius = 0.04
+height = 0.11
 
 [sub_resource type="CapsuleMesh" id="Mesh_thigh"]
 radius = 0.09
-height = 0.36
+height = 0.42
 
 [sub_resource type="CapsuleMesh" id="Mesh_shin"]
-radius = 0.075
-height = 0.36
+radius = 0.072
+height = 0.42
 
 [sub_resource type="BoxMesh" id="Mesh_foot"]
-size = Vector3(0.14, 0.09, 0.3)
+size = Vector3(0.13, 0.08, 0.28)
 
 [sub_resource type="TorusMesh" id="Mesh_ring"]
 inner_radius = 0.42
 outer_radius = 0.5
 
-[node name="CharacterRig" type="Node3D" node_paths=PackedStringArray("Pelvis", "Head", "ShoulderPivotL", "ShoulderPivotR", "HipPivotL", "HipPivotR", "KneePivotL", "KneePivotR")]
+[node name="CharacterRig" type="Node3D" node_paths=PackedStringArray("Pelvis", "Head", "ShoulderPivotL", "ShoulderPivotR", "HipPivotL", "HipPivotR", "KneePivotL", "KneePivotR", "ElbowPivotL", "ElbowPivotR")]
 script = ExtResource("1_rig")
 Pelvis = NodePath("Pelvis")
 Head = NodePath("Pelvis/Head")
@@ -67,91 +82,114 @@ HipPivotL = NodePath("Pelvis/HipPivotL")
 HipPivotR = NodePath("Pelvis/HipPivotR")
 KneePivotL = NodePath("Pelvis/HipPivotL/KneePivotL")
 KneePivotR = NodePath("Pelvis/HipPivotR/KneePivotR")
+ElbowPivotL = NodePath("Pelvis/ShoulderPivotL/ElbowPivotL")
+ElbowPivotR = NodePath("Pelvis/ShoulderPivotR/ElbowPivotR")
 
 [node name="Pelvis" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
 
 [node name="Hips" type="MeshInstance3D" parent="Pelvis"]
-mesh = SubResource("Mesh_hips")
+mesh = SubResource("Mesh_waist")
 surface_material_override/0 = SubResource("Mat_body")
 
 [node name="Torso" type="MeshInstance3D" parent="Pelvis"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.42, 0)
-mesh = SubResource("Mesh_torso")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.36, 0)
+mesh = SubResource("Mesh_chest")
 surface_material_override/0 = SubResource("Mat_body")
 
+[node name="Neck" type="MeshInstance3D" parent="Pelvis/Torso"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.29, 0)
+mesh = SubResource("Mesh_neck")
+surface_material_override/0 = SubResource("Mat_joint")
+
 [node name="Core" type="MeshInstance3D" parent="Pelvis/Torso"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, -0.14)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.16)
 mesh = SubResource("Mesh_core")
 surface_material_override/0 = SubResource("Mat_accent")
 
 [node name="BackTrim" type="MeshInstance3D" parent="Pelvis/Torso"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0.14)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0.16)
 mesh = SubResource("Mesh_core")
 surface_material_override/0 = SubResource("Mat_accent")
 
 [node name="Head" type="MeshInstance3D" parent="Pelvis"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.83, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.78, 0)
 mesh = SubResource("Mesh_head")
 surface_material_override/0 = SubResource("Mat_joint")
 
 [node name="Visor" type="MeshInstance3D" parent="Pelvis/Head"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -0.1)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0.01, -0.09)
 mesh = SubResource("Mesh_visor")
 surface_material_override/0 = SubResource("Mat_accent")
 
 [node name="ShoulderPivotL" type="Node3D" parent="Pelvis"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.29, 0.6, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.225, 0.48, 0)
 
 [node name="Shoulder" type="MeshInstance3D" parent="Pelvis/ShoulderPivotL"]
-mesh = SubResource("Mesh_joint_ball")
+mesh = SubResource("Mesh_shoulder")
 surface_material_override/0 = SubResource("Mat_joint")
 
-[node name="Arm" type="MeshInstance3D" parent="Pelvis/ShoulderPivotL"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.03, -0.3, 0)
-mesh = SubResource("Mesh_arm")
+[node name="UpperArm" type="MeshInstance3D" parent="Pelvis/ShoulderPivotL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.14, 0)
+mesh = SubResource("Mesh_upperarm")
 surface_material_override/0 = SubResource("Mat_body")
 
-[node name="Hand" type="MeshInstance3D" parent="Pelvis/ShoulderPivotL"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.04, -0.6, 0)
-mesh = SubResource("Mesh_joint_ball")
+[node name="ElbowPivotL" type="Node3D" parent="Pelvis/ShoulderPivotL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.27, 0)
+
+[node name="Forearm" type="MeshInstance3D" parent="Pelvis/ShoulderPivotL/ElbowPivotL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.13, 0)
+mesh = SubResource("Mesh_forearm")
+surface_material_override/0 = SubResource("Mat_body")
+
+[node name="Hand" type="MeshInstance3D" parent="Pelvis/ShoulderPivotL/ElbowPivotL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.315, 0)
+mesh = SubResource("Mesh_hand")
 surface_material_override/0 = SubResource("Mat_joint")
 
 [node name="ShoulderPivotR" type="Node3D" parent="Pelvis"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.29, 0.6, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.225, 0.48, 0)
 
 [node name="Shoulder" type="MeshInstance3D" parent="Pelvis/ShoulderPivotR"]
-mesh = SubResource("Mesh_joint_ball")
+mesh = SubResource("Mesh_shoulder")
 surface_material_override/0 = SubResource("Mat_joint")
 
-[node name="Arm" type="MeshInstance3D" parent="Pelvis/ShoulderPivotR"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.03, -0.3, 0)
-mesh = SubResource("Mesh_arm")
+[node name="UpperArm" type="MeshInstance3D" parent="Pelvis/ShoulderPivotR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.14, 0)
+mesh = SubResource("Mesh_upperarm")
 surface_material_override/0 = SubResource("Mat_body")
 
-[node name="Hand" type="MeshInstance3D" parent="Pelvis/ShoulderPivotR"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.04, -0.6, 0)
-mesh = SubResource("Mesh_joint_ball")
+[node name="ElbowPivotR" type="Node3D" parent="Pelvis/ShoulderPivotR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.27, 0)
+
+[node name="Forearm" type="MeshInstance3D" parent="Pelvis/ShoulderPivotR/ElbowPivotR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.13, 0)
+mesh = SubResource("Mesh_forearm")
+surface_material_override/0 = SubResource("Mat_body")
+
+[node name="Hand" type="MeshInstance3D" parent="Pelvis/ShoulderPivotR/ElbowPivotR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.315, 0)
+mesh = SubResource("Mesh_hand")
 surface_material_override/0 = SubResource("Mat_joint")
 
 [node name="HipPivotL" type="Node3D" parent="Pelvis"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11, -0.08, 0)
 
 [node name="Thigh" type="MeshInstance3D" parent="Pelvis/HipPivotL"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.17, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.21, 0)
 mesh = SubResource("Mesh_thigh")
 surface_material_override/0 = SubResource("Mat_body")
 
 [node name="KneePivotL" type="Node3D" parent="Pelvis/HipPivotL"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.34, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.42, 0)
 
 [node name="Shin" type="MeshInstance3D" parent="Pelvis/HipPivotL/KneePivotL"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.17, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.21, 0)
 mesh = SubResource("Mesh_shin")
 surface_material_override/0 = SubResource("Mat_body")
 
 [node name="Foot" type="MeshInstance3D" parent="Pelvis/HipPivotL/KneePivotL"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.36, -0.04)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.42, -0.04)
 mesh = SubResource("Mesh_foot")
 surface_material_override/0 = SubResource("Mat_joint")
 
@@ -159,20 +197,20 @@ surface_material_override/0 = SubResource("Mat_joint")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11, -0.08, 0)
 
 [node name="Thigh" type="MeshInstance3D" parent="Pelvis/HipPivotR"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.17, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.21, 0)
 mesh = SubResource("Mesh_thigh")
 surface_material_override/0 = SubResource("Mat_body")
 
 [node name="KneePivotR" type="Node3D" parent="Pelvis/HipPivotR"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.34, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.42, 0)
 
 [node name="Shin" type="MeshInstance3D" parent="Pelvis/HipPivotR/KneePivotR"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.17, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.21, 0)
 mesh = SubResource("Mesh_shin")
 surface_material_override/0 = SubResource("Mat_body")
 
 [node name="Foot" type="MeshInstance3D" parent="Pelvis/HipPivotR/KneePivotR"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.36, -0.04)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.42, -0.04)
 mesh = SubResource("Mesh_foot")
 surface_material_override/0 = SubResource("Mat_joint")
 

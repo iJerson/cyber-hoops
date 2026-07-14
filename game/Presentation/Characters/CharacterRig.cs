@@ -21,6 +21,8 @@ public partial class CharacterRig : Node3D
     [Export] public Node3D? HipPivotR { get; set; }
     [Export] public Node3D? KneePivotL { get; set; }
     [Export] public Node3D? KneePivotR { get; set; }
+    [Export] public Node3D? ElbowPivotL { get; set; }
+    [Export] public Node3D? ElbowPivotR { get; set; }
 
     public override void _Ready()
     {

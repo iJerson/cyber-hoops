@@ -80,6 +80,21 @@ public partial class AnimationStats : Resource
     /// <summary>Free-arm shield bar pitch in the protect stance, radians.</summary>
     [Export] public float ShieldArmPitch { get; set; } = 0.7f;
 
+    /// <summary>Elbow flexion at rest — a straight-locked elbow reads unnatural, radians.</summary>
+    [Export] public float ElbowBaseline { get; set; } = 0.2f;
+
+    /// <summary>Extra elbow flexion at the rear of the gait swing, radians.</summary>
+    [Export] public float ElbowGaitSwing { get; set; } = 0.5f;
+
+    /// <summary>Elbow flexion range from floor contact to the top of the dribble bounce, radians.</summary>
+    [Export] public float ElbowDribbleRange { get; set; } = 0.9f;
+
+    /// <summary>Elbow flexion in the protect shield bar, radians (~90°).</summary>
+    [Export] public float ElbowShieldBend { get; set; } = 1.4f;
+
+    /// <summary>Elbow flexion with arms overhead (dunk carry) — near straight, radians.</summary>
+    [Export] public float ElbowRaisedBend { get; set; } = 0.15f;
+
     // --- Action layer (layer 2) ---
 
     /// <summary>Shoulder pitch with arms fully overhead (dunk carry), radians.</summary>
