@@ -33,6 +33,15 @@ public partial class AnimationStats : Resource
     /// <summary>Extra knee flexion per metre of crouch, radians/m.</summary>
     [Export] public float KneeCrouchGain { get; set; } = 1.8f;
 
+    /// <summary>
+    /// Hip flexion per metre of crouch, radians/m — the thigh must rotate
+    /// forward as the body crouches, same as the knee bending. Without this
+    /// the thigh stays vertical and only the knee kicks the shin backward,
+    /// which looks like sitting in an invisible chair instead of a real
+    /// crouch (hip and knee flex together, knee stays over the foot).
+    /// </summary>
+    [Export] public float HipCrouchGain { get; set; } = 1.2f;
+
     /// <summary>How much the feet counter-rotate to stay level with the ground, 0–1.</summary>
     [Export] public float FootLevelFactor { get; set; } = 0.7f;
 

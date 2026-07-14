@@ -11,6 +11,7 @@ KneeBaseline = 0.15
 KneeSwing = 0.9
 KneePhaseOffset = 1.6
 KneeCrouchGain = 1.8
+HipCrouchGain = 1.2
 FootLevelFactor = 0.7
 SprintLean = 0.3
 BreatheAmplitude = 0.012

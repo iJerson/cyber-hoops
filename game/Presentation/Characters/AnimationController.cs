@@ -179,6 +179,13 @@ public partial class AnimationController : Node
             legR = Mathf.Lerp(legR, stats.FlightLegTuck, _armsRaised);
         }
 
+        // Hip flexion from crouch: the thigh must rotate forward together with
+        // the knee bend, or the thigh stays vertical while the shin kicks back
+        // alone — reads as sitting in an invisible chair instead of crouching.
+        var hipCrouch = crouch * stats.HipCrouchGain;
+        legL += hipCrouch;
+        legR += hipCrouch;
+
         // --- Knees: baseline flexion (never tall), swing-phase bend lagging the
         // hip, plus bend that visually explains any crouch. Feet counter-rotate
         // to stay level with the floor. Knee axis: positive X kicks the shin back.
