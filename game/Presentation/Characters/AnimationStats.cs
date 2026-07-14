@@ -86,8 +86,13 @@ public partial class AnimationStats : Resource
     /// <summary>Extra elbow flexion at the rear of the gait swing, radians.</summary>
     [Export] public float ElbowGaitSwing { get; set; } = 0.5f;
 
-    /// <summary>Elbow flexion range from floor contact to the top of the dribble bounce, radians.</summary>
-    [Export] public float ElbowDribbleRange { get; set; } = 0.9f;
+    /// <summary>
+    /// Elbow flexion range from floor contact to the top of the dribble bounce,
+    /// radians. Kept small: this compounds with the shoulder pump, and a bent
+    /// elbow reaches much less far than a straight one — too much range here
+    /// folds the hand well above the ball's actual bounce height.
+    /// </summary>
+    [Export] public float ElbowDribbleRange { get; set; } = 0.0f;
 
     /// <summary>Elbow flexion in the protect shield bar, radians (~90°).</summary>
     [Export] public float ElbowShieldBend { get; set; } = 1.4f;
