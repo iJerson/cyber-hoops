@@ -37,7 +37,7 @@ public partial class DribbleStats : Resource
     [Export] public float ProtectExitRadius { get; set; } = 2.0f;
 
     /// <summary>Anchor while standing: sideways and forward offsets, metres (front-outside of the dribble foot).</summary>
-    [Export] public Vector2 IdleAnchorOffset { get; set; } = new(0.3f, 0.5f);
+    [Export] public Vector2 IdleAnchorOffset { get; set; } = new(0.25f, 0.32f);
 
     /// <summary>How far ahead the ball is pushed at full speed, metres.</summary>
     [Export] public float RunAheadDistance { get; set; } = 0.85f;

@@ -102,12 +102,16 @@ public partial class AnimationController : Node
         var dribbleWeight = _dribbleWeight * (1f - _armsRaised);
         if (dribbleWeight > 0f)
         {
-            var pump = stats.DribblePumpBase + stats.DribblePumpRange * Dribble!.NormalizedBallHeight;
-            armR = Mathf.Lerp(armR, pump, dribbleWeight);
-            // Forearm does most of the visible dribble work, same as a real
-            // dribble — the elbow bends more than the shoulder swings.
-            var elbowPump = stats.ElbowBaseline + stats.ElbowDribbleRange * Dribble.NormalizedBallHeight;
-            elbowR = Mathf.Lerp(elbowR, elbowPump, dribbleWeight);
+            // 2-bone IK: the hand always lands on the ball's real position
+            // (relative to the shoulder), so shoulder pitch and elbow flexion
+            // come out of the actual geometry instead of two independently
+            // tuned angle curves that drift out of sync whenever bone
+            // lengths change.
+            var targetY = Dribble!.BallHeightAboveFloor - (rig.Pelvis.Position.Y + stats.ShoulderHeightAbovePelvis);
+            var targetZ = Dribble.AnchorLocalZ;
+            var ik = ArmIK.Solve(targetY, targetZ, stats.UpperArmLength, stats.ForearmLength);
+            armR = Mathf.Lerp(armR, (float)ik.ShoulderPitch, dribbleWeight);
+            elbowR = Mathf.Lerp(elbowR, (float)ik.ElbowFlexion, dribbleWeight);
             lean += -stats.DribbleLean * dribbleWeight;
             crouch += stats.DribbleCrouch * dribbleWeight;
 

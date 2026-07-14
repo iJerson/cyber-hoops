@@ -37,6 +37,12 @@ public partial class DribbleComponent : Node
     /// <summary>Ball height as a fraction of the current apex, in [0,1]. For the arm pump.</summary>
     public float NormalizedBallHeight { get; private set; }
 
+    /// <summary>Ball height above the floor, in metres. Feeds the arm IK target.</summary>
+    public float BallHeightAboveFloor { get; private set; }
+
+    /// <summary>Ball's forward/back offset (local Z) from the body origin, in metres. Feeds the arm IK target.</summary>
+    public float AnchorLocalZ { get; private set; }
+
     /// <summary>True while the protect stance is active (defender near, with hysteresis).</summary>
     public bool IsProtecting => _protecting;
 
@@ -102,6 +108,8 @@ public partial class DribbleComponent : Node
         var height = (float)_bounce.HeightFor(_apex);
         ball.SetBounce(height, _bounce.ContactThisTick);
         NormalizedBallHeight = _apex <= 0f ? 0f : height / _apex;
+        BallHeightAboveFloor = (ball.Stats?.Radius ?? 0.12f) + height;
+        AnchorLocalZ = DribbleAnchor!.Position.Z;
     }
 
     private void AdvanceBounce(double delta, DribbleStats stats, float apex, float normalizedSpeed)

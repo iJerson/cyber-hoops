@@ -60,16 +60,25 @@ public partial class AnimationStats : Resource
     // --- Dribble layer (layer 1) ---
 
     /// <summary>Crouch depth while dribbling, metres.</summary>
-    [Export] public float DribbleCrouch { get; set; } = 0.08f;
+    [Export] public float DribbleCrouch { get; set; } = 0.18f;
 
     /// <summary>Forward lean while dribbling, radians.</summary>
     [Export] public float DribbleLean { get; set; } = 0.12f;
 
-    /// <summary>Ball-arm pitch at floor contact, radians (positive = forward).</summary>
-    [Export] public float DribblePumpBase { get; set; } = 0.35f;
+    /// <summary>
+    /// Upper arm length (shoulder to elbow), metres — must match the rig's
+    /// ElbowPivot offset. The dribble arm is posed by 2-bone IK (see
+    /// CyberHoops.Core.Character.ArmIK) so shoulder pitch and elbow flexion
+    /// always land the hand on the ball's real position — no more hand-tuned
+    /// angle curves to rebalance every time the rig changes.
+    /// </summary>
+    [Export] public float UpperArmLength { get; set; } = 0.27f;
 
-    /// <summary>Extra ball-arm pitch at the top of the bounce, radians.</summary>
-    [Export] public float DribblePumpRange { get; set; } = 0.55f;
+    /// <summary>Forearm length (elbow to hand), metres — must match the rig's Hand offset.</summary>
+    [Export] public float ForearmLength { get; set; } = 0.315f;
+
+    /// <summary>Shoulder height above the pelvis, metres — must match the rig's ShoulderPivot Y offset.</summary>
+    [Export] public float ShoulderHeightAbovePelvis { get; set; } = 0.48f;
 
     /// <summary>Pelvis yaw in the protect stance, radians (ball side turned away).</summary>
     [Export] public float ProtectYaw { get; set; } = 0.9f;
@@ -85,14 +94,6 @@ public partial class AnimationStats : Resource
 
     /// <summary>Extra elbow flexion at the rear of the gait swing, radians.</summary>
     [Export] public float ElbowGaitSwing { get; set; } = 0.5f;
-
-    /// <summary>
-    /// Elbow flexion range from floor contact to the top of the dribble bounce,
-    /// radians. Kept small: this compounds with the shoulder pump, and a bent
-    /// elbow reaches much less far than a straight one — too much range here
-    /// folds the hand well above the ball's actual bounce height.
-    /// </summary>
-    [Export] public float ElbowDribbleRange { get; set; } = 0.0f;
 
     /// <summary>Elbow flexion in the protect shield bar, radians (~90°).</summary>
     [Export] public float ElbowShieldBend { get; set; } = 1.4f;
