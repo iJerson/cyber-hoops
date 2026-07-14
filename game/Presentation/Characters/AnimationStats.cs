@@ -62,6 +62,14 @@ public partial class AnimationStats : Resource
     /// <summary>Crouch depth while dribbling, metres.</summary>
     [Export] public float DribbleCrouch { get; set; } = 0.18f;
 
+    /// <summary>
+    /// Extra crouch at full sprint while dribbling, metres — brings the
+    /// shoulder closer to the lower, faster running bounce so the arm's IK
+    /// target stays within reach more of the cycle (matches the research
+    /// library's low forward-driving stance).
+    /// </summary>
+    [Export] public float SprintDribbleCrouch { get; set; } = 0.08f;
+
     /// <summary>Forward lean while dribbling, radians.</summary>
     [Export] public float DribbleLean { get; set; } = 0.12f;
 

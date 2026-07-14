@@ -113,7 +113,7 @@ public partial class AnimationController : Node
             armR = Mathf.Lerp(armR, (float)ik.ShoulderPitch, dribbleWeight);
             elbowR = Mathf.Lerp(elbowR, (float)ik.ElbowFlexion, dribbleWeight);
             lean += -stats.DribbleLean * dribbleWeight;
-            crouch += stats.DribbleCrouch * dribbleWeight;
+            crouch += (stats.DribbleCrouch + stats.SprintDribbleCrouch * stride) * dribbleWeight;
 
             if (_protectWeight > 0f)
             {

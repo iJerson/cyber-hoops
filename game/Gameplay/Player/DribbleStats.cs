@@ -39,8 +39,14 @@ public partial class DribbleStats : Resource
     /// <summary>Anchor while standing: sideways and forward offsets, metres (front-outside of the dribble foot).</summary>
     [Export] public Vector2 IdleAnchorOffset { get; set; } = new(0.25f, 0.32f);
 
-    /// <summary>How far ahead the ball is pushed at full speed, metres.</summary>
-    [Export] public float RunAheadDistance { get; set; } = 0.85f;
+    /// <summary>
+    /// How far ahead the ball is pushed at full speed, metres, added on top of
+    /// IdleAnchorOffset.Y. Kept modest: the running bounce apex is low (see
+    /// MovingHeight), which already consumes most of the arm's reach
+    /// vertically — pushing this too far out leaves no reach budget for the
+    /// hand to ever approach the ball during a sprint dribble.
+    /// </summary>
+    [Export] public float RunAheadDistance { get; set; } = 0.35f;
 
     /// <summary>Protect anchor: sideways (away from defender) and backward offsets, metres.</summary>
     [Export] public Vector2 ProtectAnchorOffset { get; set; } = new(0.4f, -0.15f);
