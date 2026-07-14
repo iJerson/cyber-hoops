@@ -14,3 +14,6 @@ DunkJumpHeight = 1.1
 DunkSlamSpeed = 8.0
 DunkDipSeconds = 0.06
 DunkHangExponent = 0.7
+ShotDipSeconds = 0.05
+DunkSlamAt = 0.55
+DunkLandRecoverSeconds = 0.15

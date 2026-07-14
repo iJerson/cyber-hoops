@@ -40,10 +40,16 @@ public partial class ShootingComponent : Node
 
     private float _gravity;
     private bool _dunking;
+    private bool _slammed;
     private double _dunkElapsed;
+    private double _landRecover;
     private Vector3 _dunkStart;
     private Vector3 _dunkLanding;
     private Vector3 _rimPosition;
+    private bool _hasPendingShot;
+    private double _pendingShotTimer;
+    private Vector3 _pendingTarget;
+    private float _pendingClearance;
 
     public bool IsDunking => _dunking;
 
@@ -52,6 +58,13 @@ public partial class ShootingComponent : Node
         if (Body is null || Possession is null || Stats is null)
         {
             GD.PushError($"{nameof(ShootingComponent)} requires {nameof(Body)}, {nameof(Possession)} and {nameof(Stats)}.");
+            SetPhysicsProcess(false);
+            return;
+        }
+
+        if (Stats.DunkDuration <= 0f)
+        {
+            GD.PushError($"{nameof(ShootStats.DunkDuration)} must be positive.");
             SetPhysicsProcess(false);
             return;
         }
@@ -67,6 +80,26 @@ public partial class ShootingComponent : Node
             return;
         }
 
+        if (_landRecover > 0.0)
+        {
+            _landRecover -= delta;
+            if (_landRecover <= 0.0)
+            {
+                Anim?.SetActionDip(0f);
+            }
+        }
+
+        if (_hasPendingShot)
+        {
+            _pendingShotTimer -= delta;
+            if (_pendingShotTimer <= 0.0)
+            {
+                _hasPendingShot = false;
+                Anim?.SetActionDip(0f);
+                Shoot(_pendingTarget, _pendingClearance);
+            }
+        }
+
         if (ReadPlayerInput && Input.IsActionJustPressed(ShootAction))
         {
             TryShoot();
@@ -76,7 +109,7 @@ public partial class ShootingComponent : Node
     /// <summary>Finishes by context if this player possesses the ball. Returns true when a finish started.</summary>
     public bool TryShoot()
     {
-        if (_dunking || !Possession!.HasBall)
+        if (_dunking || _hasPendingShot || !Possession!.HasBall)
         {
             return false;
         }
@@ -96,8 +129,14 @@ public partial class ShootingComponent : Node
             return true;
         }
 
-        var clearance = groundDistance <= stats.LayupRange ? stats.LayupArcClearance : stats.ArcClearance;
-        return Shoot(target.GlobalPosition, clearance);
+        // Jump shot / layup: brief pre-load dip, release when it ends. The dip
+        // IS the visible input reaction (responsiveness contract).
+        _hasPendingShot = true;
+        _pendingShotTimer = stats.ShotDipSeconds;
+        _pendingTarget = target.GlobalPosition;
+        _pendingClearance = groundDistance <= stats.LayupRange ? stats.LayupArcClearance : stats.ArcClearance;
+        Anim?.SetActionDip(1f);
+        return true;
     }
 
     private bool Shoot(Vector3 targetPosition, float arcClearance)
@@ -130,6 +169,7 @@ public partial class ShootingComponent : Node
     private void StartDunk(Vector3 rimPosition)
     {
         _dunking = true;
+        _slammed = false;
         // Negative elapsed time = the pre-load dip window before the lunge.
         _dunkElapsed = -Stats!.DunkDipSeconds;
         _rimPosition = rimPosition;
@@ -143,7 +183,9 @@ public partial class ShootingComponent : Node
         Body.Velocity = Vector3.Zero;
         Movement?.SetPhysicsProcess(false);
         Possession!.HoldBall(OverheadAnchor);
+        // Arms rise through the dip so the hands arrive with the ball (overlap).
         Anim?.SetActionDip(1f);
+        Anim?.SetArmsRaised(1f);
     }
 
     private void UpdateDunk(double delta)
@@ -160,7 +202,6 @@ public partial class ShootingComponent : Node
         if (wasDipping)
         {
             Anim?.SetActionDip(0f);
-            Anim?.SetArmsRaised(1f);
         }
 
         var t = Mathf.Clamp((float)(_dunkElapsed / stats.DunkDuration), 0f, 1f);
@@ -172,26 +213,42 @@ public partial class ShootingComponent : Node
         position.Y += Mathf.Pow(arc, stats.DunkHangExponent) * stats.DunkJumpHeight;
         Body!.GlobalPosition = position;
 
+        // Slam near the arc apex (hands at the rim), not on touchdown.
+        if (!_slammed && t >= stats.DunkSlamAt)
+        {
+            _slammed = true;
+            Slam();
+        }
+
         if (t < 1f)
         {
             return;
         }
 
-        var ball = Possession!.ReleaseBall(Vector3.Down * stats.DunkSlamSpeed);
-        if (ball is not null)
-        {
-            ball.GlobalPosition = _rimPosition + Vector3.Up * 0.15f;
-            ball.LastShotGroundDistance = GroundDistance(_dunkLanding, _rimPosition);
-            DunkSound?.Play();
-            if (GetTree().GetFirstNodeInGroup("hoop_effects") is Presentation.Court.HoopEffects fx)
-            {
-                fx.Slam();
-            }
-        }
-
+        // Touchdown: absorb through the knees, then hand control back.
         _dunking = false;
         Movement?.SetPhysicsProcess(true);
         Anim?.SetArmsRaised(0f);
+        Anim?.SetActionDip(1f);
+        _landRecover = stats.DunkLandRecoverSeconds;
+    }
+
+    private void Slam()
+    {
+        var stats = Stats!;
+        var ball = Possession!.ReleaseBall(Vector3.Down * stats.DunkSlamSpeed);
+        if (ball is null)
+        {
+            return;
+        }
+
+        ball.GlobalPosition = _rimPosition + Vector3.Up * 0.15f;
+        ball.LastShotGroundDistance = GroundDistance(_dunkLanding, _rimPosition);
+        DunkSound?.Play();
+        if (GetTree().GetFirstNodeInGroup("hoop_effects") is Presentation.Court.HoopEffects fx)
+        {
+            fx.Slam();
+        }
     }
 
     private static float GroundDistance(Vector3 a, Vector3 b) =>

@@ -62,6 +62,8 @@ public sealed class BounceClock
     private double Step(double phaseDelta)
     {
         var next = _phase + phaseDelta;
+        // A delta ≥ 2 (extreme lag spike) collapses multiple contacts into one
+        // report — accepted: at most one bounce sound/tick is audible anyway.
         ContactThisTick = next >= 1.0;
         _phase = next % 1.0;
         return _phase;

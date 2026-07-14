@@ -37,4 +37,13 @@ public partial class ShootStats : Resource
 
     /// <summary>Exponent on the lunge height curve; below 1 flattens the apex for extra hang time.</summary>
     [Export] public float DunkHangExponent { get; set; } = 0.7f;
+
+    /// <summary>Pre-load dip before a jump shot or layup releases, seconds.</summary>
+    [Export] public float ShotDipSeconds { get; set; } = 0.05f;
+
+    /// <summary>Fraction of the dunk lunge at which the ball slams through the rim (near apex).</summary>
+    [Export(PropertyHint.Range, "0.3,0.9")] public float DunkSlamAt { get; set; } = 0.55f;
+
+    /// <summary>Landing absorption time after the dunk, seconds.</summary>
+    [Export] public float DunkLandRecoverSeconds { get; set; } = 0.15f;
 }

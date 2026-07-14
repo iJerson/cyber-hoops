@@ -24,11 +24,15 @@ public partial class BallVisual : MeshInstance3D
     /// <summary>Ball height (in radii) below which contact squash applies.</summary>
     [Export] public float SquashBelowRadii { get; set; } = 1.6f;
 
-    /// <summary>Deformation blend speed, per second.</summary>
-    [Export] public float BlendSpeed { get; set; } = 14.0f;
+    /// <summary>Deform engage speed, per second (fast attack at contact).</summary>
+    [Export] public float AttackSpeed { get; set; } = 14.0f;
+
+    /// <summary>Deform release speed, per second (slow settle back to round).</summary>
+    [Export] public float ReleaseSpeed { get; set; } = 1.5f;
 
     private CyberHoopsBall? _ball;
     private float _deform; // negative = squash, positive = stretch
+    private float _lastY;
 
     public override void _Ready()
     {
@@ -37,37 +41,40 @@ public partial class BallVisual : MeshInstance3D
         {
             GD.PushError($"{nameof(BallVisual)} must be a direct child of the Ball.");
             SetPhysicsProcess(false);
+            return;
         }
+
+        _lastY = _ball.GlobalPosition.Y;
     }
 
     public override void _PhysicsProcess(double delta)
     {
         var ball = _ball!;
         var radius = ball.Stats?.Radius ?? 0.12f;
-        float target;
 
+        // Fall speed from position delta so it works for the kinematic dribble
+        // (LinearVelocity is unused while frozen) and free flight alike.
+        var y = ball.GlobalPosition.Y;
+        var fallSpeed = Mathf.Max(0f, (_lastY - y) / (float)delta);
+        _lastY = y;
+
+        float target;
         if (ball.CurrentStateName == CyberHoopsBall.HeldState)
         {
             target = 0f;
         }
         else
         {
-            var heightAboveFloor = ball.GlobalPosition.Y - radius;
+            var heightAboveFloor = y - radius;
             var nearFloor = heightAboveFloor < radius * (SquashBelowRadii - 1f);
-            if (nearFloor)
-            {
-                target = -SquashAmount;
-            }
-            else
-            {
-                var fallSpeed = ball.CurrentStateName == CyberHoopsBall.FreeState
-                    ? Mathf.Max(0f, -ball.LinearVelocity.Y)
-                    : 0f;
-                target = StretchAmount * Mathf.Clamp(fallSpeed / StretchAtSpeed, 0f, 1f);
-            }
+            target = nearFloor
+                ? -SquashAmount
+                : StretchAmount * Mathf.Clamp(fallSpeed / StretchAtSpeed, 0f, 1f);
         }
 
-        _deform = Mathf.MoveToward(_deform, target, BlendSpeed * (float)delta);
+        // Fast attack toward deformation, slow settle back toward round.
+        var engaging = Mathf.Abs(target) > Mathf.Abs(_deform);
+        _deform = Mathf.MoveToward(_deform, target, (engaging ? AttackSpeed : ReleaseSpeed) * (float)delta);
 
         // Volume-ish preserving: vertical scale 1+d, horizontal 1-d/2.
         var vertical = 1f + _deform;

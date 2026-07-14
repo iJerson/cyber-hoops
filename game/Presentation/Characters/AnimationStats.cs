@@ -45,6 +45,18 @@ public partial class AnimationStats : Resource
     /// <summary>Idle breathing rate, radians/s.</summary>
     [Export] public float BreatheRate { get; set; } = 2.2f;
 
+    /// <summary>Normalized speed above which breathing fully yields to gait bob (one oscillator at a time).</summary>
+    [Export] public float BreatheStrideCutoff { get; set; } = 0.3f;
+
+    /// <summary>Arm swing lags the leg swing by this phase, radians (overlap — arms trail).</summary>
+    [Export] public float ArmPhaseLag { get; set; } = 0.25f;
+
+    /// <summary>Hip pitch of the tucked legs during dunk flight, radians.</summary>
+    [Export] public float FlightLegTuck { get; set; } = 0.45f;
+
+    /// <summary>Extra knee flexion during dunk flight, radians.</summary>
+    [Export] public float FlightKneeTuck { get; set; } = 1.1f;
+
     // --- Dribble layer (layer 1) ---
 
     /// <summary>Crouch depth while dribbling, metres.</summary>

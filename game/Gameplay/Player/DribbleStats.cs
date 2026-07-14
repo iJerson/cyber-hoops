@@ -47,4 +47,7 @@ public partial class DribbleStats : Resource
 
     /// <summary>How fast the anchor glides between placements, m/s.</summary>
     [Export] public float AnchorMoveSpeed { get; set; } = 6.0f;
+
+    /// <summary>How fast the bounce apex height adapts to state changes, m/s (continuity — no mid-air teleports).</summary>
+    [Export] public float ApexBlendSpeed { get; set; } = 2.5f;
 }

@@ -30,6 +30,7 @@ public partial class AnimationController : Node
     private float _dribbleWeight;
     private float _protectWeight;
     private float _stopWeight;
+    private float _protectSide = 1f;
     private float _idleTime;
     private float _headYaw;
     private float _pelvisRestY;
@@ -71,17 +72,22 @@ public partial class AnimationController : Node
         var stride = Movement!.NormalizedSpeed;
         var gaitAngle = Movement.GaitPhase * Mathf.Tau;
         var swing = Mathf.Sin(gaitAngle);
+        // Arms trail the legs slightly (overlap) instead of exact antiphase.
+        var armSwing = Mathf.Sin(gaitAngle - stats.ArmPhaseLag);
 
         UpdateLayerWeights(stats, dt);
 
         // --- Layer 0: locomotion ---
         var legL = swing * stats.LegSwing * stride;
         var legR = -swing * stats.LegSwing * stride;
-        var armL = -swing * stats.ArmSwing * stride;
-        var armR = swing * stats.ArmSwing * stride;
+        var armL = -armSwing * stats.ArmSwing * stride;
+        var armR = armSwing * stats.ArmSwing * stride;
         var lean = -stats.SprintLean * stride;
-        var bob = Mathf.Abs(Mathf.Sin(gaitAngle * 2f)) * stats.BobHeight * stride;
-        var breathe = (1f - stride) * stats.BreatheAmplitude * Mathf.Sin(_idleTime * stats.BreatheRate);
+        // Two bobs per stride cycle, minima at the foot plants (0 / 0.5).
+        var bob = Mathf.Abs(Mathf.Sin(gaitAngle)) * stats.BobHeight * stride;
+        // One pelvis oscillator at a time: breathing gates off as gait bob takes over.
+        var breatheWeight = Mathf.Clamp(1f - stride / stats.BreatheStrideCutoff, 0f, 1f);
+        var breathe = breatheWeight * stats.BreatheAmplitude * Mathf.Sin(_idleTime * stats.BreatheRate);
         var pelvisYaw = 0f;
         var crouch = 0f;
 
@@ -97,7 +103,9 @@ public partial class AnimationController : Node
             if (_protectWeight > 0f)
             {
                 var protect = _protectWeight * dribbleWeight;
-                pelvisYaw = stats.ProtectYaw * Dribble.ProtectSideSign * protect;
+                // Side sign is blended, not raw — a defender crossing the midline
+                // must not snap the pelvis 1.8 rad in one frame.
+                pelvisYaw = stats.ProtectYaw * _protectSide * protect;
                 crouch += stats.ProtectCrouch * protect;
                 armL = Mathf.Lerp(armL, stats.ShieldArmPitch, protect);
             }
@@ -111,13 +119,21 @@ public partial class AnimationController : Node
         armL = Mathf.Lerp(armL, stats.ArmsRaisedAngle, _armsRaised);
         armR = Mathf.Lerp(armR, stats.ArmsRaisedAngle, _armsRaised);
 
+        // --- Dunk flight: legs tuck instead of freezing in the last stride pose ---
+        if (_armsRaised > 0f)
+        {
+            legL = Mathf.Lerp(legL, stats.FlightLegTuck, _armsRaised);
+            legR = Mathf.Lerp(legR, stats.FlightLegTuck, _armsRaised);
+        }
+
         // --- Knees: baseline flexion (never tall), swing-phase bend lagging the
         // hip, plus bend that visually explains any crouch. Feet counter-rotate
         // to stay level with the floor. Knee axis: positive X kicks the shin back.
         var kneeCrouch = crouch * stats.KneeCrouchGain;
-        var kneeL = stats.KneeBaseline + kneeCrouch
+        var kneeTuck = stats.FlightKneeTuck * _armsRaised;
+        var kneeL = stats.KneeBaseline + kneeCrouch + kneeTuck
                     + Mathf.Max(0f, Mathf.Sin(gaitAngle + stats.KneePhaseOffset)) * stats.KneeSwing * stride;
-        var kneeR = stats.KneeBaseline + kneeCrouch
+        var kneeR = stats.KneeBaseline + kneeCrouch + kneeTuck
                     + Mathf.Max(0f, Mathf.Sin(gaitAngle + Mathf.Pi + stats.KneePhaseOffset)) * stats.KneeSwing * stride;
 
         // --- Write channels ---
@@ -149,6 +165,7 @@ public partial class AnimationController : Node
             _stopWeight,
             StateMachine!.CurrentState == LocomotionStates.Stop ? 1f : 0f,
             stats.LayerBlendSpeed * dt);
+        _protectSide = Mathf.MoveToward(_protectSide, Dribble.ProtectSideSign, stats.LayerBlendSpeed * dt);
     }
 
     /// <summary>Counter-rotates the foot under a knee pivot so the sole stays near-level.</summary>

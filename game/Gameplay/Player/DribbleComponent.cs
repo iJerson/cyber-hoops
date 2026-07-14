@@ -26,6 +26,7 @@ public partial class DribbleComponent : Node
     private float _gravity;
     private float _lastGaitPhase;
     private bool _protecting;
+    private float _apex = -1f; // smoothed; -1 = not dribbling, re-seed on pickup
 
     /// <summary>Current bounce phase in [0,1); contact at 0.</summary>
     public float BouncePhase => (float)_bounce.Phase;
@@ -51,6 +52,11 @@ public partial class DribbleComponent : Node
             return;
         }
 
+        if (Stats.ProtectExitRadius <= Stats.ProtectEnterRadius)
+        {
+            GD.PushError("ProtectExitRadius must exceed ProtectEnterRadius or the protect stance flickers.");
+        }
+
         _gravity = (float)ProjectSettings.GetSetting("physics/3d/default_gravity").AsDouble();
         _lastGaitPhase = Movement.GaitPhase;
     }
@@ -63,26 +69,39 @@ public partial class DribbleComponent : Node
             IsDribbling = false;
             NormalizedBallHeight = 0f;
             _protecting = false;
+            _apex = -1f;
             _lastGaitPhase = Movement!.GaitPhase;
             return;
         }
-
-        IsDribbling = true;
 
         var stats = Stats!;
         var normalizedSpeed = Movement!.NormalizedSpeed;
         UpdateProtectState(stats);
 
-        var apex = _protecting
+        var apexTarget = _protecting
             ? stats.ProtectHeight
             : Mathf.Lerp(stats.IdleHeight, stats.MovingHeight, normalizedSpeed);
 
-        AdvanceBounce(delta, stats, apex, normalizedSpeed);
+        if (!IsDribbling)
+        {
+            // Fresh pickup: start at floor contact with the target apex — no
+            // stale phase, no mid-air teleport.
+            _bounce.Reset();
+            _apex = apexTarget;
+            IsDribbling = true;
+        }
+        else
+        {
+            // Apex changes glide (state flips must not teleport the ball mid-flight).
+            _apex = Mathf.MoveToward(_apex, apexTarget, stats.ApexBlendSpeed * (float)delta);
+        }
+
+        AdvanceBounce(delta, stats, _apex, normalizedSpeed);
         PlaceAnchor(delta, stats, normalizedSpeed);
 
-        var height = (float)_bounce.HeightFor(apex);
+        var height = (float)_bounce.HeightFor(_apex);
         ball.SetBounce(height, _bounce.ContactThisTick);
-        NormalizedBallHeight = apex <= 0f ? 0f : height / apex;
+        NormalizedBallHeight = _apex <= 0f ? 0f : height / _apex;
     }
 
     private void AdvanceBounce(double delta, DribbleStats stats, float apex, float normalizedSpeed)
@@ -96,14 +115,20 @@ public partial class DribbleComponent : Node
 
         _lastGaitPhase = gaitPhase;
 
-        if (gaitDelta > 0.0001f)
+        // Gait drives the bounce, but gravity sets a floor on the tempo: at a
+        // creep the gait step would stretch the period toward infinity and the
+        // ball would hover. Whichever advances the phase further wins.
+        var tempo = stats.IdleTempoMultiplier * (_protecting ? stats.ProtectTempoMultiplier : 1f);
+        var bouncesPerCycle = Mathf.Lerp(stats.WalkBouncesPerCycle, stats.RunBouncesPerCycle, normalizedSpeed);
+        var gaitStep = gaitDelta * bouncesPerCycle;
+        var timeStep = delta / (DribbleCycle.PeriodFor(apex, _gravity) / tempo);
+
+        if (gaitStep >= timeStep)
         {
-            var bouncesPerCycle = Mathf.Lerp(stats.WalkBouncesPerCycle, stats.RunBouncesPerCycle, normalizedSpeed);
             _bounce.AdvanceByGait(gaitDelta, bouncesPerCycle);
         }
         else
         {
-            var tempo = stats.IdleTempoMultiplier * (_protecting ? stats.ProtectTempoMultiplier : 1f);
             _bounce.AdvanceByTime(delta, apex, _gravity, tempo);
         }
     }
