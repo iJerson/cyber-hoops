@@ -34,6 +34,8 @@ public partial class AnimationController : Node
     private float _idleTime;
     private float _headYaw;
     private float _pelvisRestY;
+    private Vector3 _hipRestL;
+    private Vector3 _hipRestR;
 
     /// <summary>0 = arms follow gait, 1 = both arms overhead (dunk carry).</summary>
     public void SetArmsRaised(float amount) => _armsRaisedTarget = Mathf.Clamp(amount, 0f, 1f);
@@ -53,6 +55,16 @@ public partial class AnimationController : Node
         if (Rig.Pelvis is not null)
         {
             _pelvisRestY = Rig.Pelvis.Position.Y;
+        }
+
+        if (Rig.HipPivotL is not null)
+        {
+            _hipRestL = Rig.HipPivotL.Position;
+        }
+
+        if (Rig.HipPivotR is not null)
+        {
+            _hipRestR = Rig.HipPivotR.Position;
         }
     }
 
@@ -92,6 +104,8 @@ public partial class AnimationController : Node
         var crouch = 0f;
         var lifeBob = 0f;
         var lifeKnee = 0f;
+        var stagger = 0f;
+        var widen = 0f;
 
         // Elbow baseline: a dead-straight elbow reads unnatural even at rest.
         // Bends more at the rear of the swing (natural running arm carry).
@@ -126,6 +140,15 @@ public partial class AnimationController : Node
             var catchEase = Mathf.Sin(Dribble.BouncePhase * Mathf.Pi); // 0 at contact, 1 at catch
             lifeKnee = stats.DribbleLifeKnee * (1f - catchEase) * lifeWeight;
             lifeBob = stats.DribbleLifeBob * (1f - catchEase) * lifeWeight;
+
+            // Athletic ready stance: ball-side foot back, other foot forward,
+            // stance widened — without this both knees bend the same amount
+            // in the same direction and read as sitting in an invisible chair.
+            // Fades out with speed: a moving dribble already has alternating
+            // legs from the gait itself, and a fixed stagger fights that mid-
+            // swing instead of adding anything.
+            stagger = stats.DribbleStagger * lifeWeight;
+            widen = stats.DribbleStanceWiden * lifeWeight;
 
             if (_protectWeight > 0f)
             {
@@ -169,6 +192,10 @@ public partial class AnimationController : Node
         // --- Write channels ---
         rig.HipPivotL.Rotation = new Vector3(legL, 0f, 0f);
         rig.HipPivotR.Rotation = new Vector3(legR, 0f, 0f);
+        // Left is the non-ball foot (steps forward, i.e. more negative Z);
+        // right is the ball-side foot (drops back). Both widen outward.
+        rig.HipPivotL.Position = _hipRestL + new Vector3(-widen, 0f, -stagger);
+        rig.HipPivotR.Position = _hipRestR + new Vector3(widen, 0f, stagger);
         if (rig.KneePivotL is not null && rig.KneePivotR is not null)
         {
             rig.KneePivotL.Rotation = new Vector3(kneeL, 0f, 0f);

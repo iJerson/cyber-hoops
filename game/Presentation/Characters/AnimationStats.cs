@@ -31,7 +31,7 @@ public partial class AnimationStats : Resource
     [Export] public float KneePhaseOffset { get; set; } = 1.6f;
 
     /// <summary>Extra knee flexion per metre of crouch, radians/m.</summary>
-    [Export] public float KneeCrouchGain { get; set; } = 3.0f;
+    [Export] public float KneeCrouchGain { get; set; } = 1.8f;
 
     /// <summary>How much the feet counter-rotate to stay level with the ground, 0–1.</summary>
     [Export] public float FootLevelFactor { get; set; } = 0.7f;
@@ -60,7 +60,7 @@ public partial class AnimationStats : Resource
     // --- Dribble layer (layer 1) ---
 
     /// <summary>Crouch depth while dribbling, metres.</summary>
-    [Export] public float DribbleCrouch { get; set; } = 0.18f;
+    [Export] public float DribbleCrouch { get; set; } = 0.14f;
 
     /// <summary>
     /// Extra crouch at full sprint while dribbling, metres — brings the
@@ -82,6 +82,17 @@ public partial class AnimationStats : Resource
 
     /// <summary>Extra pelvis sink synced to the ball's bounce phase while standing and dribbling, metres.</summary>
     [Export] public float DribbleLifeBob { get; set; } = 0.02f;
+
+    /// <summary>
+    /// Front-back stagger between the feet while dribbling, metres — the
+    /// ball-side foot drops back, the other steps forward. Without this both
+    /// knees bend the same amount in the same direction and read as sitting
+    /// in an invisible chair instead of an athletic ready stance.
+    /// </summary>
+    [Export] public float DribbleStagger { get; set; } = 0.1f;
+
+    /// <summary>Extra stance width per leg while dribbling, metres.</summary>
+    [Export] public float DribbleStanceWiden { get; set; } = 0.05f;
 
     /// <summary>Forward lean while dribbling, radians.</summary>
     [Export] public float DribbleLean { get; set; } = 0.12f;
