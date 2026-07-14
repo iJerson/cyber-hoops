@@ -90,6 +90,8 @@ public partial class AnimationController : Node
         var breathe = breatheWeight * stats.BreatheAmplitude * Mathf.Sin(_idleTime * stats.BreatheRate);
         var pelvisYaw = 0f;
         var crouch = 0f;
+        var lifeBob = 0f;
+        var lifeKnee = 0f;
 
         // Elbow baseline: a dead-straight elbow reads unnatural even at rest.
         // Bends more at the rear of the swing (natural running arm carry).
@@ -114,6 +116,16 @@ public partial class AnimationController : Node
             elbowR = Mathf.Lerp(elbowR, (float)ik.ElbowFlexion, dribbleWeight);
             lean += -stats.DribbleLean * dribbleWeight;
             crouch += (stats.DribbleCrouch + stats.SprintDribbleCrouch * stride) * dribbleWeight;
+
+            // Bounce-synced life: without this the legs are a dead-static
+            // crouch whenever the player stands still (stride's swing term is
+            // exactly zero at rest). Ties to the ball's real bounce phase —
+            // same clock the arm already follows — peaking at floor contact
+            // and easing off at the catch. Fades out as gait swing takes over.
+            var lifeWeight = dribbleWeight * (1f - stride);
+            var catchEase = Mathf.Sin(Dribble.BouncePhase * Mathf.Pi); // 0 at contact, 1 at catch
+            lifeKnee = stats.DribbleLifeKnee * (1f - catchEase) * lifeWeight;
+            lifeBob = stats.DribbleLifeBob * (1f - catchEase) * lifeWeight;
 
             if (_protectWeight > 0f)
             {
@@ -149,9 +161,9 @@ public partial class AnimationController : Node
         // to stay level with the floor. Knee axis: positive X kicks the shin back.
         var kneeCrouch = crouch * stats.KneeCrouchGain;
         var kneeTuck = stats.FlightKneeTuck * _armsRaised;
-        var kneeL = stats.KneeBaseline + kneeCrouch + kneeTuck
+        var kneeL = stats.KneeBaseline + kneeCrouch + kneeTuck + lifeKnee
                     + Mathf.Max(0f, Mathf.Sin(gaitAngle + stats.KneePhaseOffset)) * stats.KneeSwing * stride;
-        var kneeR = stats.KneeBaseline + kneeCrouch + kneeTuck
+        var kneeR = stats.KneeBaseline + kneeCrouch + kneeTuck + lifeKnee
                     + Mathf.Max(0f, Mathf.Sin(gaitAngle + Mathf.Pi + stats.KneePhaseOffset)) * stats.KneeSwing * stride;
 
         // --- Write channels ---
@@ -171,7 +183,7 @@ public partial class AnimationController : Node
             rig.ElbowPivotL.Rotation = new Vector3(elbowL, 0f, 0f);
             rig.ElbowPivotR.Rotation = new Vector3(elbowR, 0f, 0f);
         }
-        rig.Pelvis.Position = rig.Pelvis.Position with { Y = _pelvisRestY + bob + breathe - crouch };
+        rig.Pelvis.Position = rig.Pelvis.Position with { Y = _pelvisRestY + bob + breathe - crouch - lifeBob };
         rig.Pelvis.Rotation = new Vector3(lean, pelvisYaw, 0f);
 
         // --- Layer 4: head look-at (always wins the head) ---

@@ -70,6 +70,19 @@ public partial class AnimationStats : Resource
     /// </summary>
     [Export] public float SprintDribbleCrouch { get; set; } = 0.08f;
 
+    /// <summary>
+    /// Extra knee flexion synced to the ball's own bounce phase while
+    /// standing and dribbling, radians — without this the stride-driven knee
+    /// swing is exactly zero at rest and the legs go dead-static even though
+    /// the arm is clearly moving. Peaks at floor contact, eases at the catch.
+    /// Fades out as speed rises (gait swing takes over — one motion source
+    /// at a time, same rule as the breathing/bob handoff).
+    /// </summary>
+    [Export] public float DribbleLifeKnee { get; set; } = 0.18f;
+
+    /// <summary>Extra pelvis sink synced to the ball's bounce phase while standing and dribbling, metres.</summary>
+    [Export] public float DribbleLifeBob { get; set; } = 0.02f;
+
     /// <summary>Forward lean while dribbling, radians.</summary>
     [Export] public float DribbleLean { get; set; } = 0.12f;
 
